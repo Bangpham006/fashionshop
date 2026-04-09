@@ -1,6 +1,5 @@
 package com.iws.fashionshop.user.service;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +19,15 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User registerUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("This username is already used. Please choose another one!");
+        if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
+            throw new RuntimeException("Error: '" + user.getUsername() + "' has already been taken!");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(Collections.singleton("Normal User"));
-        }
         return userRepository.save(user);
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsernameIgnoreCase(username);
     }
 }

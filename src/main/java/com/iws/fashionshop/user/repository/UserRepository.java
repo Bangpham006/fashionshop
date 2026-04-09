@@ -10,7 +10,7 @@ import com.iws.fashionshop.user.model.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
 
-    Optional<User> findByUsername(String username);
+    Boolean existsByUsernameIgnoreCase(String username);
 
-    Boolean existsByUsername(String username);
+    Optional<User> findByUsernameIgnoreCase(String username);
 }
