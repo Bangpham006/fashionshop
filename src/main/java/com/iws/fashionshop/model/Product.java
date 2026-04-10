@@ -1,19 +1,51 @@
 package com.iws.fashionshop.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "products")
 public class Product {
+    @Id
+    private String id;
 
-    private Long id;
+    @Indexed // Index để tìm kiếm tên nhanh hơn
     private String name;
-    private double price;
 
-    public Product() {}
+    @Indexed(unique = true)
+    private String slug; // Dùng cho đường dẫn URL đẹp (SEO)
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    private String description;
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    @Indexed
+    private String categoryId;
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    private String brand;
+    private List<String> images;
+    private String gender; // Men, Women, Unisex
+
+    private Double basePrice; // Giá hiển thị "chỉ từ..." ngoài trang chủ
+
+    private List<String> tags; // Ví dụ: ["Running", "Nike Air", "Summer"]
+
+    // RATING
+    private Double averageRating = 0.0;
+    // CHO PHAN REVIEW
+    private Integer totalReviews = 0;
+
+    private boolean isActive = true;
+    private boolean isFeatured = false; // Đánh dấu sản phẩm hot/nổi bật
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }
