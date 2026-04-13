@@ -41,10 +41,10 @@ public class Product {
     private List<String> images;
 
     @Pattern(regexp = "Male|Female|Unisex")
-    private String gender; // Chỉ có thể chọn "Male", "Female" và "Unisex"
+    private String gender; // Chỉ có thể chọn "Male", "Female" và "Unisex", dùng để sau này làm filter
 
     @Pattern(regexp = "Clothe|Shoes|Backpack|Other")
-    private String type; // Chỉ có thể chọn "CLothe", "Shoe", "Backpack" và "Other"
+    private String type; // Chỉ có thể chọn "CLothe", "Shoe", "Backpack" và "Other", dùng để sau này làm filter
 
     @Min(value = 0)
     private Double basePrice; // Giá hiển thị "chỉ từ..." ngoài trang chủ
