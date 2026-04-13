@@ -41,15 +41,13 @@ public class Product {
     private List<String> images;
 
     @Pattern(regexp = "Male|Female|Unisex")
-    private String gender;
+    private String gender; // Chỉ có thể chọn "Male", "Female" và "Unisex"
 
     @Pattern(regexp = "Clothe|Shoes|Backpack|Other")
-    private String type;
+    private String type; // Chỉ có thể chọn "CLothe", "Shoe", "Backpack" và "Other"
 
     @Min(value = 0)
     private Double basePrice; // Giá hiển thị "chỉ từ..." ngoài trang chủ
-
-    private List<String> tags; // Ví dụ: ["Running", "Nike Air", "Summer"]
 
     // RATING
     @Builder.Default
