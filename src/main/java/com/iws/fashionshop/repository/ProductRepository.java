@@ -32,4 +32,7 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     Page<Product> findByBrandAndGenderAndIsActiveTrue(String brand, String gender, Pageable pageable);
     // 6. Kiểm tra xem slug đã tồn tại chưa
     boolean existsBySlug(String slug);
+    // 7 Locj theo gioi tinh + loai hang shoes , clothing ,...
+    Page<Product> findByCategoryIdAndGenderAndIsActiveTrue(String categoryId, String gender, Pageable pageable);
+
 }

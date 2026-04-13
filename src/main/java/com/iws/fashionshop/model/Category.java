@@ -33,6 +33,7 @@ public class Category {
     private Integer displayOrder = 0; // Thứ tự hiển thị trên Menu
 
     private Boolean active = true ;
+    // cho sort theo tgian spham
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

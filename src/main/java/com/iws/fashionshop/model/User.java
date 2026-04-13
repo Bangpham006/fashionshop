@@ -29,7 +29,7 @@ public class User {
     private String role; // ROLE_USER hoặc ROLE_ADMIN
 
 
-    private boolean enabled = true; // Trạng thái tài khoản (bị khóa hay không)
+    private boolean enabled = true; // Trạng thái tài khoản (bị khóa hay không)z
 
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
