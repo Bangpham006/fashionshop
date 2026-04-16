@@ -1,15 +1,16 @@
 package com.iws.fashionshop.repository;
 
-import com.iws.fashionshop.model.User;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
+
+import com.iws.fashionshop.model.User;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
-    // Tìm người dùng bằng email để đăng nhập
-    Optional<User> findByEmail(String email);
 
-    // Kiểm tra email đã tồn tại chưa (để báo lỗi khi đăng ký trùng)
-    boolean existsByEmail(String email);
+    Optional<User> findByUsernameIgnoreCase(String username);
+
+    Boolean existsByUsername(String username);
 }

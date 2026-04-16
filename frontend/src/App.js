@@ -1,77 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import api from './api/axiosConfig';
+import axios from 'axios';
+import './App.css';
+import Navbar from './components/Layout/Navbar'; 
+
+const api = axios.create({
+  baseURL: 'http://localhost:8080/api',
+});
 
 function App() {
-  // Khởi tạo là một mảng rỗng để không bị văng App khi chưa có dữ liệu
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Gọi API lấy sản phẩm (Mặc định page=0, size=10 như Backend quy định)
-    api.get('/products') 
+    api.get('/products/filter') 
       .then(res => {
-        // VÌ BACKEND TRẢ VỀ Page<Product> NÊN DỮ LIỆU NẰM TRONG .content
-        console.log("Dữ liệu từ Backend:", res.data);
         if (res.data && res.data.content) {
-          setProducts(res.data.content); 
+          setProducts(res.data.content);
+        } else {
+          setProducts(res.data);
         }
         setLoading(false);
       })
       .catch(err => {
-        console.error("Lỗi kết nối Backend:", err);
+        setError("Không thể kết nối tới Backend. Hãy check MongoDB và Server!");
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <div style={{ padding: '20px' }}>Đang tải sản phẩm...</div>;
-
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ color: '#2c3e50', textAlign: 'center' }}>IWS FASHION SHOP</h1>
-      <hr />
-      
-      {products.length === 0 ? (
-        <p style={{ textAlign: 'center' }}>Không có sản phẩm nào để hiển thị.</p>
-      ) : (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', 
-          gap: '20px',
-          marginTop: '20px' 
-        }}>
-          {products.map(p => (
-            <div key={p.id} style={{ 
-              border: '1px solid #ddd', 
-              padding: '15px', 
-              borderRadius: '10px',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
-            }}>
-              {/* Hiển thị ảnh đầu tiên nếu có */}
-              <img 
-                src={p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/200'} 
-                alt={p.name} 
-                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '5px' }}
-              />
-              <h3 style={{ fontSize: '18px', margin: '10px 0' }}>{p.name}</h3>
-              <p style={{ color: '#7f8c8d', fontSize: '14px' }}>Thương hiệu: {p.brand}</p>
-              <p style={{ color: '#e74c3c', fontWeight: 'bold', fontSize: '16px' }}>
-                Giá: {p.basePrice?.toLocaleString()} VNĐ
-              </p>
-              <button style={{ 
-                width: '100%', 
-                padding: '10px', 
-                backgroundColor: '#3498db', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}>
-                Xem chi tiết
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="App">
+      {/* BƯỚC 2: Đặt Navbar ở ngay đầu tiên, ngoài shop-container */}
+      <Navbar />
+
+      <div className="shop-container">
+        {/* Bạn có thể xóa bớt header cũ của App nếu muốn giao diện giống Nike hơn */}
+        <header className="shop-header">
+           <p>Đang hiển thị sản phẩm từ database</p>
+        </header>
+
+        {loading ? (
+          <div className="status-center">Đang tải sản phẩm...</div>
+        ) : error ? (
+          <div className="status-center" style={{color: 'red'}}>{error}</div>
+        ) : products.length === 0 ? (
+          <div className="status-center">Database trống hoặc chưa lấy được dữ liệu.</div>
+        ) : (
+          <div className="product-grid">
+            {products.map((p) => (
+              <div key={p.id || p._id} className="product-card">
+                <div className="image-wrapper">
+                  <img 
+                    src={p.image || 'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoes-WrQQ17.png'} 
+                    alt={p.name} 
+                    className="product-image"
+                  />
+                </div>
+                <div className="product-info">
+                  <span className="product-category">{p.categoryName || 'Sản phẩm mới'}</span>
+                  <h3 className="product-name">{p.name}</h3>
+                  <p className="product-gender">{p.gender}</p>
+                  <p className="product-price">
+                    {p.basePrice?.toLocaleString('vi-VN')} ₫
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

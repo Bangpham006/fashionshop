@@ -1,14 +1,15 @@
 package com.iws.fashionshop.controller;
 
-import com.iws.fashionshop.model.Product;
-import com.iws.fashionshop.service.ProductService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.iws.fashionshop.model.Product;
+import com.iws.fashionshop.service.ProductService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/products")
@@ -17,7 +18,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-
+    // API LỌC TỔNG HỢP - Đây là "vũ khí" chính của bạn cho Navbar
     @GetMapping("/filter")
     public ResponseEntity<Page<Product>> getFilteredProducts(
             @RequestParam(required = false) String categoryId,
@@ -39,7 +40,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProducts(keyword, page, size));
     }
 
-    // 2. Lấy sản phẩm nổi bật (Featured)
+    // 2. Lấy sản phẩm nổi bật (Featured) ngoài trang chủ
     @GetMapping("/featured")
     public ResponseEntity<List<Product>> getFeatured() {
         return ResponseEntity.ok(productService.getFeaturedProducts());
@@ -51,10 +52,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductBySlug(slug));
     }
 
-    // --- PHẦN ADMIN ---
+    // --- PHẦN DÀNH CHO ADMIN ---
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
+    public ResponseEntity<Product> create(@Valid @RequestBody Product product) {
         return new ResponseEntity<>(productService.createProduct(product), HttpStatus.CREATED);
     }
 
@@ -67,5 +68,7 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+
     }
+
 }

@@ -44,7 +44,6 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setBrand(productRequest.getBrand());
         existingProduct.setGender(productRequest.getGender());
         existingProduct.setImages(productRequest.getImages());
-        existingProduct.setTags(productRequest.getTags());
         existingProduct.setFeatured(productRequest.isFeatured());
         existingProduct.setActive(productRequest.isActive());
         existingProduct.setUpdatedAt(LocalDateTime.now());

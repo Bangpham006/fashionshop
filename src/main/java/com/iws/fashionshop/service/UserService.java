@@ -1,20 +1,59 @@
 package com.iws.fashionshop.service;
 
-import com.iws.fashionshop.model.User;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
-public interface UserService {
-    // Đăng ký va Tài khoản
-    User register(User user);
-    User login(String email, String password);
-    User getProfile(String userId);
-    User updateProfile(String userId, User userRequest);
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-    // Bảo mật
-    void changePassword(String userId, String oldPassword, String newPassword);
+import com.iws.fashionshop.model.User;
+import com.iws.fashionshop.repository.UserRepository;
 
-    // Quản trị (Admin)
-    List<User> getAllUsers();
-    void toggleUserStatus(String userId); // Khóa hoặc mở khóa tài khoản
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public User registerUser(User user) {
+        // Cảnh báo tên đã tồn tại khi đăng ký
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Tên đăng nhập đã tồn tại!");
+        }
+
+        // Mã hóa mật khẩu
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_USER"); // Mọi user đều có quyền User
+        if (user.isAdmin()) {
+            roles.add("ROLE_ADMIN");
+        }
+        user.setRoles(roles);
+
+        return userRepository.save(user);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsernameIgnoreCase(username);
+    }
+
+    public User login(String username, String rawPassword) {
+        // 1. Tìm user trong DB (không phân biệt hoa thường)
+        User user = userRepository.findByUsernameIgnoreCase(username)
+                .orElseThrow(() -> new RuntimeException("Tên đăng nhập không tồn tại!"));
+
+        // 2. Kiểm tra mật khẩu
+        // Lưu ý: Không dùng password.equals() vì một bên là chữ thường, một bên đã mã hóa
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new RuntimeException("Mật khẩu không chính xác!");
+        }
+
+        return user;
+    }
 }

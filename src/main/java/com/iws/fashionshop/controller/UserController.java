@@ -1,64 +1,72 @@
 package com.iws.fashionshop.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.iws.fashionshop.model.User;
 import com.iws.fashionshop.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.iws.fashionshop.security.JwtTokenProvider;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    // --- AUTHENTICATION & PROFILE ---
-    // chinh sua profile cua user // chua can
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            User registeredUser = userService.registerUser(user);
+            return ResponseEntity.ok("Registration successful for user: " + registeredUser.getUsername());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestParam String email, @RequestParam String password) {
-        return ResponseEntity.ok(userService.login(email, password));
+    public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
+        try {
+            // 1. Kiểm tra User/Pass trong MongoDB
+            User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+
+            // 2. Nếu đúng, tạo Token
+            String jwt = tokenProvider.generateToken(user.getUsername());
+
+            // 3. Trả về Token cho Postman
+            return ResponseEntity.ok(new LoginResponse(jwt));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getProfile(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getProfile(userId));
-    }
+    // Lớp phụ để định dạng JSON trả về
+    class LoginResponse {
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateProfile(@PathVariable String userId, @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateProfile(userId, user));
-    }
+        private String accessToken;
+        private final String tokenType = "Bearer";
 
-    // --- SECURITY ---
-    // doi mat khau
-    @PutMapping("/{userId}/change-password")
-    public ResponseEntity<String> changePassword(
-            @PathVariable String userId,
-            @RequestParam String oldPassword,
-            @RequestParam String newPassword) {
-        userService.changePassword(userId, oldPassword, newPassword);
-        return ResponseEntity.ok("Đổi mật khẩu thành công!");
-    }
+        public LoginResponse(String accessToken) {
+            this.accessToken = accessToken;
+        }
 
-    // --- ADMIN ONLY ---
-    // lay user
-    @GetMapping("/admin/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+        public String getAccessToken() {
+            return accessToken;
+        }
 
-    @PutMapping("/admin/{userId}/toggle-status")
-    public ResponseEntity<String> toggleStatus(@PathVariable String userId) {
-        userService.toggleUserStatus(userId);
-        return ResponseEntity.ok("Đã thay đổi trạng thái tài khoản.");
+        public void setAccessToken(String accessToken) {
+            this.accessToken = accessToken;
+        }
+
+        public String getTokenType() {
+            return tokenType;
+        }
     }
 }
