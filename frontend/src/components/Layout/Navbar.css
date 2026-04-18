@@ -1,7 +1,6 @@
 /* Tổng thể */
 .nav-container {
     width: 100%;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 /* Tầng 1: Thanh nhỏ trên cùng */
@@ -37,7 +36,8 @@
 }
 
 .main-logo img {
-    height: 60px; /* Logo Nike cần to hơn */
+    height: 60px;
+    /* Logo Nike cần to hơn */
 }
 
 .nav-menu ul {

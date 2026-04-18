@@ -65,4 +65,6 @@ public class Product {
     private LocalDateTime createdAt = LocalDateTime.now();
     @Builder.Default
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    private List<String> tags;
 }
