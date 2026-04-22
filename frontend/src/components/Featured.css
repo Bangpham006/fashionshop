@@ -1,0 +1,99 @@
+.featured-section {
+    padding: 60px 0;
+    background-color: #fafafa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.featured-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+.featured-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.view-all-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid #000;
+    font-weight: 600;
+    cursor: pointer;
+    padding-bottom: 2px;
+}
+
+/* KHU VỰC SCROLL NGANG */
+.featured-scroll-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto; /* Cho phép cuộn ngang */
+    padding-bottom: 20px; /* Tạo khoảng trống cho thanh cuộn */
+    scroll-snap-type: x mandatory; /* Cuộn dừng đúng từng card */
+    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+}
+
+/* Ẩn thanh cuộn trên Chrome/Safari */
+.featured-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.featured-card {
+    flex: 0 0 280px; /* Mỗi card rộng cố định 280px */
+    background: #fff;
+    scroll-snap-align: start;
+    transition: 0.3s;
+}
+
+.card-img {
+    width: 100%;
+    aspect-ratio: 3/4; /* Tỉ lệ dọc cực đẹp cho thời trang */
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ảnh không bao giờ bị méo */
+    transition: 0.5s;
+}
+
+.featured-card:hover img {
+    transform: scale(1.1);
+}
+
+.card-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #000;
+    color: #fff;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.card-info {
+    padding: 15px 0;
+}
+
+.product-name {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.product-price {
+    font-weight: 700;
+    color: #000;
+}
