@@ -2,45 +2,47 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-function Register() {
+function ForgotPassword() {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [errorColor, setErrorColor] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = async (e) => {
+    const handleForgotPassword = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (password !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             setError('Passwords do not match!');
             setErrorColor('red');
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/register', { username, password, email });
+            await axios.post('http://localhost:8080/api/auth/forgot-password', {
+                username, email, newPassword
+            });
 
-            setError('Registration successful! Redirecting to login...');
+            setError('Password changed successfully! Redirecting to login...');
             setErrorColor('green');
 
             setTimeout(() => {
                 navigate('/auth/login');
             }, 1000);
-        } catch (err) {
-            setError('Username already exists!');
+        } catch (error) {
+            setError('Failed to change password. Please check your username and email.');
             setErrorColor('red');
-            console.error(err);
+            console.error(error);
         }
     };
 
     return (
         <div style={styles.container}>
-            <form onSubmit={handleRegister} style={styles.card}>
-                <h2>CREATE ACCOUNT</h2>
+            <form onSubmit={handleForgotPassword} style={styles.card}>
+                <h2>CHANGE PASSWORD</h2>
 
                 {error && <p style={{ color: errorColor }}>{error}</p>}
 
@@ -57,7 +59,7 @@ function Register() {
 
                 <div style={styles.inputGroup}>
                     <input
-                        type="email"
+                        type="text"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -69,9 +71,9 @@ function Register() {
                 <div style={styles.inputGroup}>
                     <input
                         type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="New Password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
                         required
                         style={styles.input}
                     />
@@ -88,8 +90,8 @@ function Register() {
                     />
                 </div>
 
-                <p>Already have an account? <a href="/auth/login">Login</a></p>
-                <button type="submit" style={styles.button}>Register</button>
+                <p>Don't have an account? <a href="/auth/register">Register</a></p>
+                <button type="submit" style={styles.button}>Change Password</button>
             </form>
         </div>
     );
@@ -118,7 +120,7 @@ const styles = {
         boxSizing: 'border-box'
     },
     button: {
-        width: '25%',
+        width: '40%',
         padding: '10px',
         backgroundColor: '#000000',
         color: '#fff',
@@ -129,4 +131,4 @@ const styles = {
     }
 };
 
-export default Register;
+export default ForgotPassword;

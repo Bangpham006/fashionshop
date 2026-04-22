@@ -1,4 +1,5 @@
-import Navbar from "../components/Layout/Navbar"
+import Navbar from "../components/Navbar/Navbar"
+
 function Home() {
     return (
         <div>

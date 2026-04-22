@@ -6,7 +6,6 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [errorColor, setErrorColor] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -14,15 +13,26 @@ function Login() {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', { username, password });
+            const response = await axios.post("http://localhost:8080/api/auth/login", {
+                username: username,
+                password: password
+            });
 
-            // Lưu Token vào LocalStorage (giống như AsyncStorage trong React Native)
-            const token = response.data.token;
-            localStorage.setItem('token', token);
+            const data = response.data;
 
-            navigate('/');
+            console.log(data)
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("role", data.roles);
+
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 500);
+            };
         } catch (err) {
             setError('Username or password is incorrect!');
+            console.error(err);
         }
     };
 
@@ -55,7 +65,8 @@ function Login() {
                     />
                 </div>
 
-                <p>Don't have an account? <a href="/register">Register</a></p>
+                <p>Don't have an account? <a href="/auth/register">Register</a></p>
+                <p><a href="/auth/forgot-password">Forgot password?</a></p>
                 <button type="submit" style={styles.button}>Login</button>
             </form>
         </div>
