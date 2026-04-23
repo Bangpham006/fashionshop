@@ -1,25 +1,29 @@
 package com.iws.fashionshop.controller;
 
-import com.iws.fashionshop.model.Cart;
-import com.iws.fashionshop.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * CartController: Tầng giao diện API xử lý các yêu cầu liên quan đến Giỏ hàng.
- * Chịu trách nhiệm tiếp nhận HTTP Request và phản hồi dữ liệu JSON cho Client (Postman/Frontend).
- */
+import com.iws.fashionshop.model.Cart;
+import com.iws.fashionshop.service.CartService;
+
 @RestController
-@RequestMapping("/api/cart") // Đường dẫn gốc: http://localhost:8080/api/cart
+@RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
     /**
-     * 1. LẤY GIỎ HÀNG (READ)
-     * Mục tiêu: Khi User vào trang Giỏ hàng, hệ thống cần load danh sách món đồ họ đã chọn.
+     * 1. LẤY GIỎ HÀNG (READ) Mục tiêu: Khi User vào trang Giỏ hàng, hệ thống
+     * cần load danh sách món đồ họ đã chọn.
+     *
      * @param userId: ID của người dùng (lấy từ Path Variable)
      */
     @GetMapping("/{userId}")
@@ -29,7 +33,6 @@ public class CartController {
         Cart cart = cartService.getCartByUserId(userId);
         return ResponseEntity.ok(cart);
     }
-
 
     @PostMapping("/add")
     public ResponseEntity<Cart> addToCart(
@@ -59,8 +62,7 @@ public class CartController {
     }
 
     /**
-     * 4. LÀM TRỐNG GIỎ HÀNG
-     * Dùng sau khi khách đã đặt hàng thành công
+     * 4. LÀM TRỐNG GIỎ HÀNG Dùng sau khi khách đã đặt hàng thành công
      */
     @DeleteMapping("/clear/{userId}")
     public ResponseEntity<String> clearCart(@PathVariable String userId) {

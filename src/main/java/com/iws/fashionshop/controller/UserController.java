@@ -1,17 +1,24 @@
 package com.iws.fashionshop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.iws.fashionshop.dto.ForgotPasswordRequest;
 import com.iws.fashionshop.model.User;
-import com.iws.fashionshop.service.UserService;
 import com.iws.fashionshop.security.JwtTokenProvider;
+import com.iws.fashionshop.service.UserService;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/auth")
 public class UserController {
 
@@ -28,6 +35,18 @@ public class UserController {
         }
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        boolean isReset = userService.resetPassword(request);
+
+        if (isReset) {
+            return ResponseEntity.ok("Mật khẩu đã được thay đổi thành công!");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Username hoặc Email không chính xác!");
+        }
+    }
+
     @Autowired
     private JwtTokenProvider tokenProvider;
 
@@ -41,32 +60,29 @@ public class UserController {
             String jwt = tokenProvider.generateToken(user.getUsername());
 
             // 3. Trả về Token cho Postman
-            return ResponseEntity.ok(new LoginResponse(jwt));
+            return ResponseEntity.ok(new LoginResponse(jwt, user.getUsername(), user.getEmail(), user.getRoles()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
     // Lớp phụ để định dạng JSON trả về
-    class LoginResponse {
+    @Getter
+    @Setter
+    public static class LoginResponse {
 
-        private String accessToken;
-        private final String tokenType = "Bearer";
+        private String token;
+        private String type = "Bearer";
+        private String username;
+        private String email;
+        private String roles;
 
-        public LoginResponse(String accessToken) {
-            this.accessToken = accessToken;
-        }
-
-        public String getAccessToken() {
-            return accessToken;
-        }
-
-        public void setAccessToken(String accessToken) {
-            this.accessToken = accessToken;
-        }
-
-        public String getTokenType() {
-            return tokenType;
+        public LoginResponse(String accessToken, String username, String email, String roles) {
+            this.token = accessToken;
+            this.username = username;
+            this.email = email;
+            this.roles = roles;
         }
     }
+
 }

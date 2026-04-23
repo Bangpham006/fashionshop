@@ -1,13 +1,12 @@
 package com.iws.fashionshop.service;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.iws.fashionshop.dto.ForgotPasswordRequest;
 import com.iws.fashionshop.model.User;
 import com.iws.fashionshop.repository.UserRepository;
 
@@ -29,10 +28,9 @@ public class UserService {
         // Mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add("ROLE_USER"); // Mọi user đều có quyền User
+        String roles = "ROLE_USER"; // Mặc định mọi user đều có quyền User
         if (user.isAdmin()) {
-            roles.add("ROLE_ADMIN");
+            roles = "ROLE_ADMIN";
         }
         user.setRoles(roles);
 
@@ -55,5 +53,17 @@ public class UserService {
         }
 
         return user;
+    }
+
+    public boolean resetPassword(ForgotPasswordRequest request) {
+        return userRepository.findByUsernameIgnoreCase(request.getUsername())
+                .map(user -> {
+                    if (user.getEmail() != null && user.getEmail().equalsIgnoreCase(request.getEmail())) {
+                        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                        userRepository.save(user);
+                        return true;
+                    }
+                    return false;
+                }).orElse(false);
     }
 }

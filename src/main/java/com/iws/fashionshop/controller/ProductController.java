@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.iws.fashionshop.model.Product;
 import com.iws.fashionshop.service.ProductService;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/products")
@@ -18,7 +17,8 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // API LỌC TỔNG HỢP - Đây là "vũ khí" chính của bạn cho Navbar
+    // --- API CHO NGƯỜI DÙNG ---
+
     @GetMapping("/filter")
     public ResponseEntity<Page<Product>> getFilteredProducts(
             @RequestParam(required = false) String categoryId,
@@ -27,11 +27,9 @@ public class ProductController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "basePrice") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
-
         return ResponseEntity.ok(productService.getFilteredProducts(categoryId, gender, page, size, sortBy, sortDir));
     }
 
-    // 1. Tìm kiếm sản phẩm theo tên (Cho thanh Search)
     @GetMapping("/search")
     public ResponseEntity<Page<Product>> search(
             @RequestParam String keyword,
@@ -40,23 +38,24 @@ public class ProductController {
         return ResponseEntity.ok(productService.searchProducts(keyword, page, size));
     }
 
-    // 2. Lấy sản phẩm nổi bật (Featured) ngoài trang chủ
     @GetMapping("/featured")
     public ResponseEntity<List<Product>> getFeatured() {
         return ResponseEntity.ok(productService.getFeaturedProducts());
     }
 
-    // 3. Tìm sản phẩm theo Slug (Trang chi tiết sản phẩm)
     @GetMapping("/slug/{slug}")
     public ResponseEntity<Product> getBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(productService.getProductBySlug(slug));
     }
 
-    // --- PHẦN DÀNH CHO ADMIN ---
+    // --- API CHO QUẢN TRỊ (BẢN ĐƠN GIẢN HÓA DÙNG JSON) ---
 
-    @PostMapping
-    public ResponseEntity<Product> create(@Valid @RequestBody Product product) {
-        return new ResponseEntity<>(productService.createProduct(product), HttpStatus.CREATED);
+    // Tạo sản phẩm mới (Nhận JSON chứa danh sách ảnh dạng Base64)
+    @PostMapping("")
+    public ResponseEntity<Product> create(@RequestBody Product product) {
+        // Cách này nhận JSON thuần
+        Product savedProduct = productService.createProduct(product);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -68,7 +67,5 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
-
     }
-
 }
