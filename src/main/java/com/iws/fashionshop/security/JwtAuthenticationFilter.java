@@ -15,8 +15,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-// ban sua de xem duoc san pham
-// ban cu moi lan xem product phai can token
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

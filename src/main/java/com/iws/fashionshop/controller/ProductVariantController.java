@@ -1,13 +1,23 @@
 package com.iws.fashionshop.controller;
 
-import com.iws.fashionshop.model.ProductVariant;
-import com.iws.fashionshop.service.ProductVariantService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.iws.fashionshop.model.ProductVariant;
+import com.iws.fashionshop.service.ProductVariantService;
 
 @RestController
 @RequestMapping("/api/variants")
@@ -17,9 +27,9 @@ public class ProductVariantController {
     private ProductVariantService variantService;
 
     // --- 1. QUẢN LÝ BIẾN THỂ (ADMIN) ---
-
     // Thêm mới biến thể (Ví dụ: Lần đầu nhập Size 42 cho giày Nike)
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductVariant> addVariant(@RequestBody ProductVariant variant) {
         ProductVariant created = variantService.addVariant(variant);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -27,19 +37,20 @@ public class ProductVariantController {
 
     // Cập nhật thông tin (Đổi giá, đổi SKU...)
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductVariant> updateVariant(@PathVariable String id, @RequestBody ProductVariant variant) {
         return ResponseEntity.ok(variantService.updateVariant(id, variant));
     }
 
     // Xóa biến thể khỏi hệ thống
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteVariant(@PathVariable String id) {
         variantService.deleteVariant(id);
         return ResponseEntity.noContent().build();
     }
 
     // --- 2. TRUY VẤN DỮ LIỆU ---
-
     // Lấy tất cả các Size/Màu của một sản phẩm (Dùng để hiện lên trang chủ/chi tiết)
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ProductVariant>> getByProductId(@PathVariable String productId) {
@@ -53,7 +64,6 @@ public class ProductVariantController {
     }
 
     // --- 3. QUẢN LÝ KHO HÀNG (STOCK) ---
-
     // Nhập thêm hàng
     @PutMapping("/{id}/add-stock")
     public ResponseEntity<String> addStock(@PathVariable String id, @RequestParam int amount) {

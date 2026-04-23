@@ -23,8 +23,7 @@ import lombok.NoArgsConstructor;
 public class Product {
 
     @Id
-    private String productId; // Không thêm vào khi test Postman, MongoDB tự tạo ID này
-
+    private String productId;
     @Indexed // Index để tìm kiếm tên nhanh hơn
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;

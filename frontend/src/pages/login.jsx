@@ -1,37 +1,55 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Dùng Link thay vì thẻ <a>
+
+/**
+ * FILE LOGIN ĐÃ SỬA:
+ * 1. Cập nhật các đường dẫn Register và Forgot Password có /auth/
+ * 2. Sử dụng <Link> để trang không bị load lại (F5).
+ * 3. Giữ nguyên logic xử lý đăng nhập với Backend.
+ */
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [errorColor, setErrorColor] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // Chặn load lại trang giống như trong Web truyền thống
+        e.preventDefault();
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/auth/login', { username, password });
+            // Đảm bảo Backend của bạn đang chạy ở cổng 8080
+            const response = await axios.post("http://localhost:8080/api/auth/login", {
+                username: username,
+                password: password
+            });
 
-            // Lưu Token vào LocalStorage (giống như AsyncStorage trong React Native)
-            const token = response.data.token;
-            localStorage.setItem('token', token);
+            const data = response.data;
 
-            navigate('/');
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("role", data.roles);
+
+                // Chuyển về trang chủ sau khi đăng nhập thành công
+                setTimeout(() => {
+                    navigate('/'); 
+                }, 500);
+            }
         } catch (err) {
             setError('Username or password is incorrect!');
+            console.error(err);
         }
     };
 
     return (
         <div style={styles.container}>
             <form onSubmit={handleLogin} style={styles.card}>
-                <h2>LOGIN</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>LOGIN</h2>
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
                 <div style={styles.inputGroup}>
                     <input
@@ -55,8 +73,17 @@ function Login() {
                     />
                 </div>
 
-                <p>Don't have an account? <a href="/register">Register</a></p>
-                <button type="submit" style={styles.button}>Login</button>
+                {/* Dùng Link để khớp với App.js đã sửa */}
+                <p style={{ fontSize: '14px' }}>
+                    Don't have an account? <Link to="/auth/register" style={styles.link}>Register</Link>
+                </p>
+                <p style={{ fontSize: '14px' }}>
+                    <Link to="/auth/forgot-password" style={styles.link}>Forgot password?</Link>
+                </p>
+                
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <button type="submit" style={styles.button}>Login</button>
+                </div>
             </form>
         </div>
     );
@@ -66,33 +93,43 @@ const styles = {
     container: {
         display: 'flex',
         justifyContent: 'center',
-        height: '100vh',
+        alignItems: 'center', // Căn giữa theo chiều dọc cho đẹp
+        height: '80vh',
     },
     card: {
         padding: '40px',
-        borderRadius: '8px',
-        width: '400px'
+        borderRadius: '12px',
+        width: '100%',
+        maxWidth: '400px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)' // Thêm chút bóng đổ cho chuyên nghiệp
     },
     inputGroup: {
         marginBottom: '15px'
     },
     input: {
         width: '100%',
-        padding: '10px',
+        padding: '12px',
         marginTop: '5px',
-        borderRadius: '15px',
-        border: '1px solid #000000',
-        boxSizing: 'border-box'
+        borderRadius: '25px', // Bo tròn hơn một chút
+        border: '1px solid #ddd',
+        boxSizing: 'border-box',
+        outline: 'none'
     },
     button: {
-        width: '20%',
-        padding: '10px',
+        width: '50%', // Tăng độ rộng nút bấm cho dễ click
+        padding: '12px',
         backgroundColor: '#000000',
         color: '#fff',
         border: 'none',
         borderRadius: '30px',
         cursor: 'pointer',
-        fontSize: '16px'
+        fontSize: '16px',
+        transition: 'background 0.3s'
+    },
+    link: {
+        color: '#000',
+        fontWeight: 'bold',
+        textDecoration: 'none'
     }
 };
 

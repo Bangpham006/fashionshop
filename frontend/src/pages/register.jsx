@@ -24,15 +24,16 @@ function Register() {
         try {
             const response = await axios.post('http://localhost:8080/api/auth/register', { username, password, email });
 
-            setError('Registration successful!');
+            setError('Registration successful! Redirecting to login...');
             setErrorColor('green');
 
             setTimeout(() => {
-                navigate('/login');
+                navigate('/auth/login');
             }, 1000);
         } catch (err) {
             setError('Username already exists!');
             setErrorColor('red');
+            console.error(err);
         }
     };
 
@@ -45,10 +46,10 @@ function Register() {
 
                 <div style={styles.inputGroup}>
                     <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                         style={styles.input}
                     />
@@ -56,10 +57,10 @@ function Register() {
 
                 <div style={styles.inputGroup}>
                     <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                         style={styles.input}
                     />
@@ -87,7 +88,7 @@ function Register() {
                     />
                 </div>
 
-                <p>Already have an account? <a href="/login">Login</a></p>
+                <p>Already have an account? <a href="/auth/login">Login</a></p>
                 <button type="submit" style={styles.button}>Register</button>
             </form>
         </div>
@@ -117,7 +118,7 @@ const styles = {
         boxSizing: 'border-box'
     },
     button: {
-        width: '20%',
+        width: '25%',
         padding: '10px',
         backgroundColor: '#000000',
         color: '#fff',
