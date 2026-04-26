@@ -35,7 +35,7 @@ function App() {
           <Route path="*" element={<h2 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Không tìm thấy trang</h2>} />
         </Routes>
       </div>
-      <Footer /> {/* 2. Đặt Footer ở đây để nó hiện ở mọi trang */}
+      <Footer /> 
     </Router>
   );
 }

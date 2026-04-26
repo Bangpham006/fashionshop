@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
     // 1. Tìm theo Slug (Dùng cho trang chi tiết sản phẩm)
+    // boc voi optional de khong bi quang null
     Optional<Product> findBySlug(String slug);
 
     // 2. Tìm theo Danh mục + CÓ PHÂN TRANG & SẮP XẾP
