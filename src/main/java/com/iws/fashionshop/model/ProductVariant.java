@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import jakarta.validation.constraints.Min;
 import lombok.Data;
-
+import org.bson.types.ObjectId;
 @Data
 @Document(collection = "product_variants")
 public class ProductVariant {
@@ -14,7 +14,7 @@ public class ProductVariant {
     private String id;
 
     @Field("productId")
-    private String productId; //Kết nối với "Cha" Product
+    private ObjectId productId; //Kết nối với "Cha" Product
 
     @Field("color")
     private String color; // VD: "Black/Volt/White"

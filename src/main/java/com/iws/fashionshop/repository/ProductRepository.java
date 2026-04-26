@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+import org.bson.types.ObjectId;
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
     // 1. Tìm theo Slug (Dùng cho trang chi tiết sản phẩm)
@@ -35,5 +35,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     boolean existsBySlug(String slug);
     // 7 Locj theo gioi tinh + loai hang shoes , clothing ,...
     Page<Product> findByCategoryIdAndGenderAndIsActiveTrue(String categoryId, String gender, Pageable pageable);
+
 
 }
