@@ -17,43 +17,32 @@ const ProductDetailPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 1. Lấy product
+                setLoading(true);
+                // 1. Lấy thông tin sản phẩm từ slug
                 const productRes = await axios.get(`http://localhost:8080/api/products/slug/${slug}`);
                 const productData = productRes.data;
-
                 setProduct(productData);
 
-                // Lấy ID sản phẩm để tìm Variants
-                const productId = productData.productId || productData.id || productData._id;
-                
-                if (productId) {
-                    // 2. Lấy variants
-                    const variantsRes = await axios.get(`http://localhost:8080/api/variants/product/${productId}`);
-                    
-                    // Debug dữ liệu thô nếu vẫn chưa hiện
-                    if (variantsRes.data.length === 0) {
-                        console.warn("API trả về mảng rỗng cho Product ID:", productId);
-                    }
+                // Kiểm tra ID: Ưu tiên lấy productId (từ Java) hoặc _id (từ MongoDB)
+                const pId = productData.productId || productData.id || productData._id;
+                console.log("ID dùng để gọi API Variant:", pId);
 
-                    // Sắp xếp size (Xử lý an toàn cho cả chuỗi và số)
+                if (pId) {
+                    // 2. Lấy danh sách variants theo productId
+                    const variantsRes = await axios.get(`http://localhost:8080/api/variants/product/${pId}`);
+                    console.log("Dữ liệu Variants nhận được:", variantsRes.data);
+
                     const data = Array.isArray(variantsRes.data) ? variantsRes.data : [];
                     
+                    // Sắp xếp size tăng dần
                     const sortedVariants = data.sort((a, b) => {
-                        const sizeA = parseFloat(a.size || 0);
-                        const sizeB = parseFloat(b.size || 0);
-
-                        if (!isNaN(sizeA) && !isNaN(sizeB)) {
-                            return sizeA - sizeB;
-                        }
-                        return String(a.size || "").localeCompare(String(b.size || ""));
+                        return parseFloat(a.size) - parseFloat(b.size);
                     });
 
                     setVariants(sortedVariants);
-                } else {
-                    console.error("Không thể xác định ID của sản phẩm để tải Size.");
                 }
             } catch (error) {
-                console.error("Lỗi khi tải chi tiết sản phẩm:", error);
+                console.error("Lỗi khi fetch dữ liệu:", error);
             } finally {
                 setLoading(false);
             }
@@ -70,7 +59,7 @@ const ProductDetailPage = () => {
         }
 
         if (!selectedVariant) {
-            alert("Vui lòng chọn kích cỡ");
+            alert("Vui lòng chọn Size trước khi thêm vào giỏ hàng!");
             return;
         }
 
@@ -82,48 +71,30 @@ const ProductDetailPage = () => {
                     quantity: 1
                 }
             });
-
-            alert("Đã thêm vào giỏ hàng thành công!");
-
+            alert("Đã thêm vào túi hàng!");
         } catch (error) {
-            console.error(error);
-            alert("Lỗi khi thêm vào giỏ hàng");
+            alert("Không thể thêm vào giỏ hàng. Vui lòng thử lại.");
         }
     };
 
-    if (loading) return <div className="loading">Loading...</div>;
-    if (!product) return <div className="error">Product not found.</div>;
+    if (loading) return <div className="loading">Đang tải sản phẩm...</div>;
+    if (!product) return <div className="error">Không tìm thấy sản phẩm.</div>;
 
     return (
         <div className="pdp-container">
-            {/* LEFT */}
             <div className="pdp-left">
-                <img
-                    src={product.images?.[0] || 'https://via.placeholder.com/600'}
-                    alt={product.name}
-                />
+                <img src={product.images?.[0]} alt={product.name} />
             </div>
 
-            {/* RIGHT */}
             <div className="pdp-right">
                 <div className="pdp-info">
                     <h1 className="pdp-name">{product.name}</h1>
-
-                    <p className="pdp-category">
-                        {product.gender}'s {product.type || "Product"}
-                    </p>
-
+                    <p className="pdp-category">{product.gender}'s {product.type}</p>
                     <p className="pdp-price">
-                        {new Intl.NumberFormat('vi-VN', {
-                            style: 'currency',
-                            currency: 'VND'
-                        }).format(
-                            selectedVariant?.price || product.basePrice
-                        )}
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedVariant?.price || product.basePrice)}
                     </p>
                 </div>
 
-                {/* SIZE */}
                 <div className="pdp-selection">
                     <div className="selection-header">
                         <h3>Select Size</h3>
@@ -132,49 +103,34 @@ const ProductDetailPage = () => {
                     <div className="size-grid">
                         {variants.length > 0 ? (
                             variants.map((v) => {
-                                // CẬP NHẬT: Khớp chính xác với trường 'stock' từ MongoDB của bạn
-                                const stockValue = v.stock !== undefined ? v.stock : v.stockQuantity;
-                                const isOutOfStock = (stockValue || 0) <= 0;
-                                
-                                const isActive =
-                                    (selectedVariant?.id || selectedVariant?._id) === (v.id || v._id);
+                                const isSelected = (selectedVariant?.id || selectedVariant?._id) === (v.id || v._id);
+                                const outOfStock = (v.stock || 0) <= 0;
 
                                 return (
                                     <button
                                         key={v.id || v._id}
-                                        className={`size-item ${isActive ? 'active' : ''} ${isOutOfStock ? 'disabled' : ''}`}
-                                        disabled={isOutOfStock}
+                                        className={`size-item ${isSelected ? 'active' : ''} ${outOfStock ? 'disabled' : ''}`}
+                                        disabled={outOfStock}
                                         onClick={() => setSelectedVariant(v)}
                                     >
                                         <span className="size-number">{v.size}</span>
-                                        {/* Hiển thị màu sắc từ trường 'color' trong MongoDB */}
                                         {v.color && <span className="pdp-variant-color">{v.color}</span>}
                                     </button>
                                 );
                             })
                         ) : (
-                            <p className="no-size">
-                                This product currently has no sizes available.
-                            </p>
+                            <p className="no-size-msg">Sản phẩm này hiện đã hết hàng hoặc chưa cập nhật Size.</p>
                         )}
                     </div>
                 </div>
 
-                {/* ACTIONS */}
                 <div className="pdp-actions">
-                    <button
-                        className="add-to-cart-btn"
-                        onClick={handleAddToCart}
-                    >
+                    <button className="add-to-cart-btn" onClick={handleAddToCart}>
                         Add to Bag
                     </button>
-
-                    <button className="favorite-btn">
-                        Favorite ♡
-                    </button>
+                    <button className="favorite-btn">Favorite ♡</button>
                 </div>
 
-                {/* DESCRIPTION */}
                 <div className="pdp-description">
                     <p>{product.description}</p>
                 </div>
