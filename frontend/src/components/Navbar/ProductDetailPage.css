@@ -1,0 +1,105 @@
+.pdp-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 60px;
+    padding: 0 40px;
+}
+
+.pdp-left img {
+    width: 100%;
+    background: #f6f6f6;
+    border-radius: 8px;
+}
+
+.pdp-name {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.pdp-category {
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.pdp-price {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+.selection-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.size-grid {
+    display: grid;
+    /* Nike sử dụng lưới 2 cột hoặc 3 cột tùy sản phẩm, 2 cột giúp các ô size to và chuyên nghiệp hơn */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+    margin-bottom: 30px;
+}
+
+.size-item {
+    padding: 14px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+.pdp-variant-color {
+    font-size: 11px;
+    color: #757575;
+    margin-top: 4px;
+}
+
+.size-item:hover:not(.disabled) {
+    border-color: #000;
+}
+
+.size-item.active {
+    border-color: #000;
+    background-color: #000;
+    color: #fff; /* Đổi màu nền đen chữ trắng khi chọn giống Nike */
+}
+
+.size-item.disabled {
+    background: #f6f6f6;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 18px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.favorite-btn {
+    width: 100%;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
