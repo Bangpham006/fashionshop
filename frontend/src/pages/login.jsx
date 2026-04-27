@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // Dùng Link thay vì thẻ <a>
+import { Link } from 'react-router-dom'; // Dùng Link thay vì thẻ <a>
 
 /**
  * FILE LOGIN ĐÃ SỬA:
@@ -13,7 +13,6 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -35,7 +34,7 @@ function Login() {
 
                 // Chuyển về trang chủ sau khi đăng nhập thành công
                 setTimeout(() => {
-                    navigate('/'); 
+                    window.location.href = '/';
                 }, 500);
             }
         } catch (err) {
@@ -80,7 +79,7 @@ function Login() {
                 <p style={{ fontSize: '14px' }}>
                     <Link to="/auth/forgot-password" style={styles.link}>Forgot password?</Link>
                 </p>
-                
+
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                     <button type="submit" style={styles.button}>Login</button>
                 </div>

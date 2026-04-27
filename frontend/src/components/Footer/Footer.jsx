@@ -6,7 +6,7 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="simple-footer">
+        <footer className="footer">
             <div className="footer-container">
                 <div className="footer-copyright">
                     <CopyrightIcon size={'15px'} /> {currentYear} FashionShop, Inc. All rights reserved

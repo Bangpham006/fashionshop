@@ -1,11 +1,10 @@
-.simple-footer {
+.footer {
     width: 100%;
     padding: 20px 40px;
     background-color: #fff;
     border-top: 1px solid #f5f5f5;
     margin-bottom: 50px;
-    /* Đường kẻ mờ phía trên */
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin-top: 50px;
 }
 
 .footer-container {
@@ -13,24 +12,20 @@
     margin: 0 auto;
     display: flex;
     justify-content: flex-start;
-    /* Căn trái toàn bộ như trong hình */
     align-items: center;
     flex-wrap: wrap;
     gap: 35px;
-    /* Khoảng cách giữa bản quyền và các link */
 }
 
 .footer-copyright {
     font-size: 15px;
     color: #7e7e7e;
-    /* Màu xám đặc trưng của Nike */
 }
 
 .footer-links {
     display: flex;
     align-items: center;
     gap: 20px;
-    /* Khoảng cách giữa các link */
 }
 
 .footer-link-item {
@@ -46,10 +41,8 @@
 
 .footer-link-item:hover {
     color: #111;
-    /* Đậm lên khi hover */
 }
 
-/* Responsive cho điện thoại */
 @media (max-width: 768px) {
     .footer-container {
         flex-direction: column;

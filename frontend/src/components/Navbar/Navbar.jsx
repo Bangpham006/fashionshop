@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import './Navbar.css';
-import { useNavigate, Link } from 'react-router-dom'; // Thêm Link vào đây
-import { Search, ChevronDown, ShoppingBag, LogOut, ChartCandlestick, LayoutDashboard } from 'lucide-react';
-
-/**
- * FILE NAVBAR ĐÃ SỬA:
- * 1. Chuyển các thẻ <a> sang <Link> để tránh load lại trang.
- * 2. Đảm bảo navigate('/auth/login') khớp chính xác với App.js.
- */
+import { useNavigate, Link } from 'react-router-dom';
+// Thêm icon Menu và X (đóng)
+import { Search, ChevronDown, ShoppingBag, LogOut, ChartCandlestick, LayoutDashboard, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State cho Mobile Menu
+
   const username = localStorage.getItem("username");
   const userRole = localStorage.getItem("role");
   const navigate = useNavigate();
@@ -23,17 +20,21 @@ const Navbar = () => {
   return (
     <nav className="nav">
       <div className="nav-container">
-        {/* Logo click về trang chủ */}
-        <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        {/* Nút Burger - Chỉ hiện trên Mobile */}
+        <button className="mobile-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <div className="nav-logo" onClick={() => { navigate('/'); setIsMenuOpen(false); }} style={{ cursor: 'pointer' }}>
           <div className="logo-square">W</div>
           <span className="brand-name">FASHIONSHOP</span>
         </div>
 
-        {/* Chuyển <a> thành <Link> */}
-        <div className="nav-links">
-          <Link to="/">New & Featured</Link>
-          <Link to="/">Men</Link>
-          <Link to="/">Women</Link>
+        {/* Thêm class active khi menu mở */}
+        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>New & Featured</Link>
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>Men</Link>
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>Women</Link>
         </div>
 
         <div className="nav-utils">
@@ -68,13 +69,6 @@ const Navbar = () => {
                       </div>
                     )}
 
-                    {userRole === "ROLE_ADMIN" && (
-                      <div className="dropdown-item" onClick={() => { navigate('/admin/revenue-overview'); setIsAccountDropdownOpen(false); }}>
-                        <ChartCandlestick size={16} />
-                        <span>Revenue Overview</span>
-                      </div>
-                    )}
-
                     <div className="dropdown-item logout" onClick={handleLogout}>
                       <LogOut size={16} />
                       <span>Sign out</span>
@@ -87,10 +81,8 @@ const Navbar = () => {
             <div className="user-section">
               <button
                 className="login-button"
-                onClick={() => navigate('/auth/login')} // Đã khớp với App.js
-              >
-                Log in
-              </button>
+                onClick={() => navigate('/auth/login')}
+              >Log in</button>
             </div>
           )}
         </div>

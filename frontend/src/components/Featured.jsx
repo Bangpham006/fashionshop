@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LoadingCircles from './Loading-circles';
 import { Link } from 'react-router-dom'; // QUAN TRỌNG: Thêm dòng này để điều hướng
 import axios from 'axios';
 import './Featured.css';
@@ -24,7 +25,7 @@ const Featured = () => {
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 400; 
+      const scrollAmount = 400;
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -33,7 +34,7 @@ const Featured = () => {
   };
 
   if (loading) {
-    return <div className="loading-text">Loading product...</div>;
+    return <LoadingCircles />;
   }
 
   return (
@@ -54,9 +55,9 @@ const Featured = () => {
                 {/* Click vào ảnh cũng dẫn đến trang chi tiết */}
                 <Link to={`/product/${product.slug}`}>
                   <div className="card-img">
-                    <img 
-                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x400'} 
-                      alt={product.name} 
+                    <img
+                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x400'}
+                      alt={product.name}
                     />
                     <div className="card-tag">Hot</div>
                   </div>
@@ -68,7 +69,7 @@ const Featured = () => {
                   <p className="product-price">
                     {Number(product.basePrice).toLocaleString('vi-VN')} ₫
                   </p>
-                  
+
                   {/* NÚT SHOP NOW MỚI */}
                   <Link to={`/product/${product.slug}`} className="shop-now-btn">
                     Shop Now
