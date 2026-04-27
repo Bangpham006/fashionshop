@@ -24,7 +24,7 @@ public class ProductController {
             @RequestParam(required = false) String categoryId,
             @RequestParam(required = false) String gender,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "basePrice") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
         return ResponseEntity.ok(productService.getFilteredProducts(categoryId, gender, page, size, sortBy, sortDir));

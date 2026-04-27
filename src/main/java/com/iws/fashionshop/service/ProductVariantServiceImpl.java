@@ -64,11 +64,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         variantRepository.save(variant);
     }
 
-    /**
-     * SỬA ĐỔI CHÍNH TẠI ĐÂY:
-     * Chuyển đổi String productId từ Controller/Frontend thành ObjectId
-     * để MongoDB có thể so sánh chính xác dữ liệu.
-     */
+
     @Override
     public List<ProductVariant> getVariantsByProductId(String productId) {
         try {
