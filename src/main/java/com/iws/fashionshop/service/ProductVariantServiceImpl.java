@@ -2,6 +2,7 @@ package com.iws.fashionshop.service;
 
 import com.iws.fashionshop.model.ProductVariant;
 import com.iws.fashionshop.repository.ProductVariantRepository;
+import org.bson.types.ObjectId; // import object id
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     @Override
     public ProductVariant addVariant(ProductVariant variant) {
-        // Kiểm tra mã SKU duy nhất để không bị loạn kho
         if (variantRepository.findBySku(variant.getSku()).isPresent()) {
             throw new RuntimeException("Mã SKU " + variant.getSku() + " đã tồn tại trên hệ thống!");
         }
@@ -64,9 +64,21 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         variantRepository.save(variant);
     }
 
+    /**
+     * SỬA ĐỔI CHÍNH TẠI ĐÂY:
+     * Chuyển đổi String productId từ Controller/Frontend thành ObjectId
+     * để MongoDB có thể so sánh chính xác dữ liệu.
+     */
     @Override
     public List<ProductVariant> getVariantsByProductId(String productId) {
-        return variantRepository.findByProductId(productId);
+        try {
+            // Ép kiểu chuỗi ID thành ObjectId của MongoDB
+            ObjectId objId = new ObjectId(productId);
+            return variantRepository.findByProductId(objId);
+        } catch (IllegalArgumentException e) {
+            // Trả về danh sách rỗng nếu ID truyền lên không hợp lệ (tránh crash web)
+            return List.of();
+        }
     }
 
     @Override

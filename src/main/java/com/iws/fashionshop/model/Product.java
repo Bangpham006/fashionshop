@@ -58,7 +58,7 @@ public class Product {
     @Builder.Default
     private boolean isActive = true;
     @Builder.Default
-    private boolean isFeatured = false; // Đánh dấu sản phẩm hot/nổi bật
+    private boolean isFeatured = false; // Đánh dấu sản phẩm hot/nổi bật // hien len home
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

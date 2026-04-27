@@ -1,0 +1,218 @@
+.admin-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.admin-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.add-button {
+    background: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Table Style */
+.table-container {
+    background: #fff;
+    border: 1px solid #eee;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.admin-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.actions {
+    display: flex;
+    gap: 15px;
+}
+
+.actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-icon {
+    color: #ff4d4f;
+}
+
+.edit-icon {
+    color: #1890ff;
+}
+
+/* Modal & Form */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-content {
+    background: #fff;
+    width: 800px;
+    max-height: 90vh;
+    padding: 30px;
+    border-radius: 4px;
+    overflow-y: auto;
+}
+
+.admin-form .form-group {
+    margin-bottom: 15px;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.variants-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.variants-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.variant-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 10px;
+}
+
+.variant-form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.variant-form-table th {
+    font-size: 12px;
+    color: #888;
+    padding-bottom: 10px;
+    text-align: left;
+}
+
+.variant-form-table td {
+    padding: 5px;
+}
+
+.variant-form-table input {
+    padding: 6px !important;
+    font-size: 13px !important;
+}
+
+.add-variant-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px dashed #ccc;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.add-variant-button:hover {
+    background: #eee;
+}
+
+.remove-variant-button {
+    color: #ff4d4f;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.save-button {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    padding: 15px;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.checkbox-wrapper label {
+    cursor: pointer;
+    width: 150px;
+    margin: 0;
+    line-height: 1;
+}

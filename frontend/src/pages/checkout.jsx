@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
     const product = {
@@ -12,6 +13,13 @@ const Checkout = () => {
     const subtotal = product.price * product.quantity;
     const shippingFee = 30000;
     const total = subtotal + shippingFee;
+    const navigate = useNavigate();
+
+    function handlePayNowButton() {
+        alert("Your order has been placed successfully! Thank you for shopping with us.");
+        navigate('/');
+
+    }
 
     return (
         <div style={styles.checkoutWrapper}>
@@ -119,7 +127,9 @@ const Checkout = () => {
                 <hr style={styles.divider} />
 
                 <section style={styles.section}>
-                    <button style={styles.payNowButton}>Pay Now</button>
+                    <button style={styles.payNowButton} onClick={handlePayNowButton}>
+                        Pay Now
+                    </button>
                 </section>
             </div>
         </div>

@@ -1,7 +1,5 @@
 import React from 'react';
-import Navbar from '../../components/Navbar/Navbar';
-import Footer from '../../components/Footer/Footer';
-import RevenueGraph from '../../components/graph';
+import RevenueGraph from '../../../components/graph';
 import './revenue-overview.css';
 
 const RevenueOverview = () => {
