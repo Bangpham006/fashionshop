@@ -3,11 +3,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar/Navbar';
 
 import Home from './pages/home';
+import Category from './pages/Category/Category';
+import Checkout from './pages/checkout';
+import ProductDetail from './pages/Product Detail/ProductDetail';
 import Login from './pages/login';
 import Register from './pages/register';
 import ForgotPassword from './pages/forgot-password';
-import Checkout from './pages/checkout';
-import RevenueOverview from './pages/admin/revenue-overview';
+import RevenueOverview from './pages/admin/Revenue Overview/revenue-overview';
+import ProductManagement from './pages/admin/Product Management/Product-management';
+import SearchResult from './pages/Search Result/Search-result';
 
 import IsAdmin from './components/isAdmin';
 import Footer from './components/Footer/Footer';
@@ -36,7 +40,12 @@ const FooterWrapper = () => {
 
 function App() {
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <NavbarWrapper />
 
       <div className="content-container">
@@ -44,11 +53,15 @@ function App() {
           {/* Trang công khai */}
           <Route path="/" element={<Home />} />
 
+          <Route path="/search" element={<SearchResult />} />
+
+          <Route path="/category/:slug" element={<Category />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-
-          <Route path="/product/checkout" element={<Checkout />} />
 
           {/* Trang chỉ cho Admin */}
           <Route
@@ -56,6 +69,15 @@ function App() {
             element={
               <IsAdmin>
                 <RevenueOverview />
+              </IsAdmin>
+            }
+          />
+
+          <Route
+            path="/admin/product-management"
+            element={
+              <IsAdmin>
+                <ProductManagement />
               </IsAdmin>
             }
           />

@@ -1,6 +1,6 @@
 import React from 'react';
-import Hero from '../components/Hero';
-import Featured from '../components/Featured'; 
+import Hero from '../components/Hero/Hero';
+import Featured from '../components/Featured/Featured';
 
 function Home() {
   return (
@@ -9,7 +9,7 @@ function Home() {
 
       <Featured />
 
-      
+
     </div>
   );
 }

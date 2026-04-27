@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import LoadingCircles from './Loading-circles';
+import LoadingCircles from '../Loading-circles';
 import { Link } from 'react-router-dom'; // QUAN TRỌNG: Thêm dòng này để điều hướng
 import axios from 'axios';
 import './Featured.css';

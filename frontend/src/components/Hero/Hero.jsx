@@ -4,8 +4,8 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
 
 // 1. Import đầy đủ 3 ảnh từ thư mục image
-import lifestyleImg from '../image/lifestyle.jpg';
-import sportImg from '../image/sport.jpg';
+import lifestyleImg from '../../image/lifestyle.jpg';
+import sportImg from '../../image/sport.jpg';
 // import accessoriesImg from '../image/lifestyle1.jpg'; // Dùng lifestyle1 cho mục phụ kiện
 
 import 'swiper/css';
@@ -61,8 +61,8 @@ const Hero = () => {
               <div className="hero-content">
                 <p className="hero-sub-title">{item.subTitle}</p>
                 <h1 className="hero-main-title">{item.title}</h1>
-                <button 
-                  className="btn-black" 
+                <button
+                  className="btn-black"
                   onClick={() => navigate(`/products?type=${item.type}`)}
                 >
                   Shop Now

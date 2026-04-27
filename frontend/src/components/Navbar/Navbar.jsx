@@ -1,11 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Navbar.css';
 import { useNavigate, Link } from 'react-router-dom';
-// Thêm icon Menu và X (đóng)
-import { Search, ChevronDown, ShoppingBag, LogOut, ChartCandlestick, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Search, ChevronDown, ShoppingBag, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/categories');
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const parentCategories = categories.filter(cat => cat.level === 1);
+
+  // 1. Thêm state để lưu từ khóa tìm kiếm
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // 2. Hàm xử lý tìm kiếm
+  const handleSearch = (e) => {
+    // Nếu là sự kiện bàn phím và không phải phím Enter thì bỏ qua
+    if (e.key && e.key !== 'Enter') return;
+
+    if (searchQuery.trim()) {
+      // Chuyển hướng sang trang search với query parameter
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+
+      // Nếu đang ở mobile menu thì đóng menu sau khi search
+      setIsMenuOpen(false);
+    }
+
+    setSearchQuery("")
+  };
+
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State cho Mobile Menu
 
   const username = localStorage.getItem("username");
@@ -30,17 +65,45 @@ const Navbar = () => {
           <span className="brand-name">FASHIONSHOP</span>
         </div>
 
-        {/* Thêm class active khi menu mở */}
-        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-          <Link to="/" onClick={() => setIsMenuOpen(false)}>New & Featured</Link>
-          <Link to="/" onClick={() => setIsMenuOpen(false)}>Men</Link>
-          <Link to="/" onClick={() => setIsMenuOpen(false)}>Women</Link>
+        <div className="nav-links">
+          <Link to="/" className="nav-link">New & Featured</Link>
+
+          {parentCategories.map(parent => {
+            // Lọc các danh mục con (Shoes, Clothes) cho từng Men/Women
+            const subCategories = categories.filter(child => child.parentId === parent.id);
+
+            return (
+              <div key={parent.id} className="nav-item">
+                <span className="nav-link">
+                  {parent.name}
+                </span>
+
+                {subCategories.length > 0 && (
+                  <ul className="category-dropdown">
+                    {subCategories.map(child => (
+                      <li key={child.id}>
+                        <Link to={`/category/${child.slug}?gender=${parent.name}`} className="dropdown-link">
+                          {child.name} {/* Ví dụ: Shoes, Clothes */}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <div className="nav-utils">
           <div className="search-bar">
             <Search size={20} />
-            <input type="text" placeholder="Search" />
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+            />
           </div>
 
           {username ? (
