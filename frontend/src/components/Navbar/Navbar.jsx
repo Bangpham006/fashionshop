@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Navbar.css';
-import { useNavigate, Link } from 'react-router-dom'; // Thêm Link vào đây
+import { useNavigate, Link } from 'react-router-dom';
 import { Search, ChevronDown, ShoppingBag, LogOut, ChartCandlestick, LayoutDashboard } from 'lucide-react';
-
-/**
- * FILE NAVBAR ĐÃ SỬA:
- * 1. Chuyển các thẻ <a> sang <Link> để tránh load lại trang.
- * 2. Đảm bảo navigate('/auth/login') khớp chính xác với App.js.
- */
 
 const Navbar = () => {
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  
+  // 1. Thêm State để lưu từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -26,11 +25,18 @@ const Navbar = () => {
     fetchCategories();
   }, []);
 
-  const parentCategories = categories.filter(cat => cat.level === 1);
+  // 2. Hàm xử lý khi người dùng nhấn Enter ở ô Search
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchTerm.trim() !== "") {
+      // Điều hướng sang trang search kèm tham số keyword (khớp với Backend của bạn)
+      navigate(`/search?keyword=${searchTerm}`);
+      setSearchTerm(""); // Xóa nội dung ô nhập sau khi tìm kiếm
+    }
+  };
 
+  const parentCategories = categories.filter(cat => cat.level === 1);
   const username = localStorage.getItem("username");
   const userRole = localStorage.getItem("role");
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.clear();
@@ -40,32 +46,27 @@ const Navbar = () => {
   return (
     <nav className="nav">
       <div className="nav-container">
-        {/* Logo click về trang chủ */}
         <div className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <div className="logo-square">W</div>
           <span className="brand-name">FASHIONSHOP</span>
         </div>
 
-        {/* Chuyển <a> thành <Link> */}
         <div className="nav-links">
           <Link to="/" className="nav-link">New & Featured</Link>
 
           {parentCategories.map(parent => {
-            // Lọc các danh mục con (Shoes, Clothes) cho từng Men/Women
             const subCategories = categories.filter(child => child.parentId === parent.id);
-            
             return (
               <div key={parent.id} className="nav-item">
                 <Link to={`/category/${parent.slug}`} className="nav-link">
                   {parent.name}
                 </Link>
-                
                 {subCategories.length > 0 && (
                   <ul className="category-dropdown">
                     {subCategories.map(child => (
                       <li key={child.id}>
                         <Link to={`/category/${child.slug}?gender=${parent.name}`} className="dropdown-link">
-                          {child.name} {/* Ví dụ: Shoes, Clothes */}
+                          {child.name}
                         </Link>
                       </li>
                     ))}
@@ -77,9 +78,16 @@ const Navbar = () => {
         </div>
 
         <div className="nav-utils">
+          {/* 3. Cập nhật ô Search Bar */}
           <div className="search-bar">
             <Search size={20} />
-            <input type="text" placeholder="Search" />
+            <input 
+              type="text" 
+              placeholder="Search products..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật khi gõ chữ
+              onKeyDown={handleSearch} // Lắng nghe phím Enter
+            />
           </div>
 
           {username ? (
@@ -125,10 +133,7 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="user-section">
-              <button
-                className="login-button"
-                onClick={() => navigate('/auth/login')} // Đã khớp với App.js
-              >
+              <button className="login-button" onClick={() => navigate('/auth/login')}>
                 Log in
               </button>
             </div>
