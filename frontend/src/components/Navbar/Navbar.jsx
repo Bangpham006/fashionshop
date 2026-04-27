@@ -5,8 +5,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Search, ChevronDown, ShoppingBag, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
-  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false)
+  const [categories, setCategories] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -14,13 +15,11 @@ const Navbar = () => {
         const response = await axios.get('http://localhost:8080/api/categories');
         setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Lỗi khi tải danh sách phân loại:", error);
       }
     };
     fetchCategories();
   }, []);
-
-  const parentCategories = categories.filter(cat => cat.level === 1);
 
   // 1. Thêm state để lưu từ khóa tìm kiếm
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,9 +42,10 @@ const Navbar = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State cho Mobile Menu
 
+  const parentCategories = categories.filter(cat => cat.level === 1);
   const username = localStorage.getItem("username");
   const userRole = localStorage.getItem("role");
-  const navigate = useNavigate();
+
 
   const handleLogout = () => {
     localStorage.clear();
@@ -69,9 +69,7 @@ const Navbar = () => {
           <Link to="/" className="nav-link">New & Featured</Link>
 
           {parentCategories.map(parent => {
-            // Lọc các danh mục con (Shoes, Clothes) cho từng Men/Women
             const subCategories = categories.filter(child => child.parentId === parent.id);
-
             return (
               <div key={parent.id} className="nav-item">
                 <span className="nav-link">
@@ -83,7 +81,7 @@ const Navbar = () => {
                     {subCategories.map(child => (
                       <li key={child.id}>
                         <Link to={`/category/${child.slug}?gender=${parent.name}`} className="dropdown-link">
-                          {child.name} {/* Ví dụ: Shoes, Clothes */}
+                          {child.name}
                         </Link>
                       </li>
                     ))}
@@ -95,6 +93,7 @@ const Navbar = () => {
         </div>
 
         <div className="nav-utils">
+          {/* 3. Cập nhật ô Search Bar */}
           <div className="search-bar">
             <Search size={20} />
             <input
