@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // Thêm Link vào đây
+import { Link } from 'react-router-dom'; // Thêm Link vào đây
 
 /**
  * FILE FORGOT PASSWORD ĐÃ SỬA:
@@ -16,7 +16,6 @@ function ForgotPassword() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [errorColor, setErrorColor] = useState('');
-    const navigate = useNavigate();
 
     const handleForgotPassword = async (e) => {
         e.preventDefault();
@@ -31,8 +30,8 @@ function ForgotPassword() {
         try {
             // Đảm bảo API backend của bạn đúng cổng 8080
             await axios.post('http://localhost:8080/api/auth/forgot-password', {
-                username, 
-                email, 
+                username,
+                email,
                 newPassword
             });
 
@@ -40,7 +39,7 @@ function ForgotPassword() {
             setErrorColor('green');
 
             setTimeout(() => {
-                navigate('/auth/login'); // Phải khớp với route trong App.js
+                window.location.href = '/auth/login'; // Phải khớp với route trong App.js
             }, 1000);
         } catch (error) {
             setError('Failed to change password. Please check your username and email.');
