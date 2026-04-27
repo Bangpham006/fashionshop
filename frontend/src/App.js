@@ -4,12 +4,19 @@ import Home from './pages/home';
 import CategoryPage from './components/Navbar/CategoryPage';
 import CheckoutPage from './components/Navbar/CheckoutPage';
 import ProductDetailPage from './components/Navbar/ProductDetailPage';
+import SearchPage from './pages/SearchPage'; // 1. Import trang SearchPage mới tạo
 import Login from './pages/login';
 import Register from './pages/register';
 import ForgotPassword from './pages/forgotPassword';
 import RevenueOverview from './pages/admin/revenue-overview';
 import IsAdmin from './components/isAdmin';
 import Footer from './components/Footer/Footer'; 
+
+/**
+
+ * Thêm Route /search để hiển thị kết quả khi tìm kiếm từ Navbar.
+ */
+
 function App() {
   return (
     <Router 
@@ -24,6 +31,9 @@ function App() {
         <Routes>
           {/* Trang công khai */}
           <Route path="/" element={<Home />} />
+          
+          {/* Route cho trang Tìm kiếm */}
+          <Route path="/search" element={<SearchPage />} /> {/* 2. Thêm Route này */}
           
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
