@@ -12,7 +12,7 @@ import ForgotPassword from './pages/forgot-password';
 import RevenueOverview from './pages/admin/Revenue Overview/revenue-overview';
 import ProductManagement from './pages/admin/Product Management/Product-management';
 import SearchResult from './pages/Search Result/Search-result';
-
+import Cart from './pages/Cart/Cart';
 import IsAdmin from './components/isAdmin';
 import Footer from './components/Footer/Footer';
 
@@ -62,7 +62,7 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-
+          <Route path="/cart" element={<Cart />} />
           {/* Trang chỉ cho Admin */}
           <Route
             path="/admin/revenue-overview"

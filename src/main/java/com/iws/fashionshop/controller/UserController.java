@@ -3,11 +3,7 @@ package com.iws.fashionshop.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.iws.fashionshop.dto.ForgotPasswordRequest;
 import com.iws.fashionshop.model.User;
@@ -18,12 +14,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // Đảm bảo React có thể gọi API này
 @RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -38,7 +37,6 @@ public class UserController {
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         boolean isReset = userService.resetPassword(request);
-
         if (isReset) {
             return ResponseEntity.ok("Mật khẩu đã được thay đổi thành công!");
         } else {
@@ -46,9 +44,6 @@ public class UserController {
                     .body("Username hoặc Email không chính xác!");
         }
     }
-
-    @Autowired
-    private JwtTokenProvider tokenProvider;
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
@@ -59,30 +54,40 @@ public class UserController {
             // 2. Nếu đúng, tạo Token
             String jwt = tokenProvider.generateToken(user.getUsername());
 
-            // 3. Trả về Token cho Postman
-            return ResponseEntity.ok(new LoginResponse(jwt, user.getUsername(), user.getEmail(), user.getRoles()));
+            // 3. Trả về LoginResponse kèm theo ID của User
+            // Đảm bảo truyền user.getId() vào vị trí thứ 2 của Constructor
+            return ResponseEntity.ok(new LoginResponse(
+                    jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getRoles()
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
-    // Lớp phụ để định dạng JSON trả về
+    /**
+     * Lớp LoginResponse được cập nhật để chứa ID người dùng.
+     * ID này cực kỳ quan trọng để Frontend (React) dùng cho các chức năng như Giỏ hàng.
+     */
     @Getter
     @Setter
     public static class LoginResponse {
-
         private String token;
+        private String id; // ID người dùng từ MongoDB
         private String type = "Bearer";
         private String username;
         private String email;
         private String roles;
 
-        public LoginResponse(String accessToken, String username, String email, String roles) {
+        public LoginResponse(String accessToken, String id, String username, String email, String roles) {
             this.token = accessToken;
+            this.id = id;
             this.username = username;
             this.email = email;
             this.roles = roles;
         }
     }
-
 }
