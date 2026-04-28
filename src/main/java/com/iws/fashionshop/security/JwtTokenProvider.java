@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -20,7 +21,6 @@ public class JwtTokenProvider {
     private final String JWT_SECRET = "a-string-secret-at-least-256-bits-long-make-sure-it-is-safe";
     private final long JWT_EXPIRATION = 604800000L;
 
-    // --- SỬA HÀM NÀY: Nhận thêm tham số role ---
     public String generateToken(String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
@@ -28,14 +28,13 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role", role) // <--- LƯU ROLE VÀO CLAIM TẠI ĐÂY
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // --- THÊM HÀM MỚI: Lấy Role từ Token ---
     public List<GrantedAuthority> getAuthoritiesFromJWT(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
@@ -43,13 +42,11 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        String role = claims.get("role", String.class); // Lấy giá trị từ key "role"
-
+        String role = claims.get("role", String.class); 
         if (role == null) {
             return Collections.emptyList();
         }
 
-        // Trả về danh sách quyền mà Spring Security hiểu được
         return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
@@ -60,8 +57,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(authToken);
             return true;
-        } catch (Exception ex) {
-            // Giữ nguyên các catch cũ của bạn
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
     }

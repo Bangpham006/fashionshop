@@ -1,13 +1,14 @@
 .featured-section {
     padding: 60px 0;
     background-color: #fff;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    position: relative;
 }
 
 .featured-header {
@@ -22,27 +23,48 @@
     font-weight: 600;
 }
 
-.featured-controls {
+.featured-relative-container {
+    position: relative;
     display: flex;
-    gap: 10px;
+    align-items: center;
 }
 
 .scroll-btn {
-    width: 40px;
-    height: 40px;
+    position: absolute;
+    top: 40%;
+    /* Nằm ở giữa chiều cao của ảnh sản phẩm */
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
-    background: #f5f5f5;
+    background: #fff;
+    /* Nút trắng nổi bật trên nền xám của ảnh */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     font-size: 18px;
-    transition: 0.3s;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .scroll-btn:hover {
-    background: #e5e5e5;
+    background: #f5f5f5;
+    transform: translateY(-50%) scale(1.1);
 }
 
-/* Quan trọng: Thanh trượt ngang */
+/* Đẩy nút ra 2 mép */
+.prev-btn {
+    left: -22px;
+}
+
+.next-btn {
+    right: -22px;
+}
+
+/* Thanh trượt ngang */
 .featured-scroll-wrapper {
     display: flex;
     gap: 20px;
@@ -50,6 +72,7 @@
     scroll-behavior: smooth;
     padding-bottom: 20px;
     scroll-snap-type: x mandatory;
+    width: 100%;
 }
 
 /* Ẩn thanh cuộn */
@@ -58,17 +81,22 @@
 }
 
 .featured-card {
-    min-width: 350px; /* Độ rộng mỗi card */
+    min-width: 200px;
     scroll-snap-align: start;
     transition: 0.3s;
+    flex-shrink: 0;
+    /* Không cho card bị bóp méo */
 }
 
 .card-img {
     position: relative;
     background-color: #f6f6f6;
-    aspect-ratio: 3/4;
+    aspect-ratio: 1 / 1;
+    /* Chuyển từ 3/4 sang 1/1 (hình vuông) nếu muốn gọn hơn */
     overflow: hidden;
     margin-bottom: 15px;
+    max-height: 350px;
+    /* Thêm giới hạn chiều cao */
 }
 
 .card-img img {
@@ -91,12 +119,18 @@
     padding: 4px 12px;
     font-size: 12px;
     text-transform: uppercase;
+    z-index: 2;
 }
 
 .product-name {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 5px;
+    transition: 0.2s;
+}
+
+.featured-card:hover .product-name {
+    text-decoration: underline;
 }
 
 .product-subtext {
@@ -110,29 +144,30 @@
     font-size: 16px;
 }
 
-.loading-text, .empty-msg {
-    text-align: center;
-    padding: 50px;
-    width: 100%;
-}
 .shop-now-btn {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 10px 24px;
-  background-color: #111; 
-  color: #fff;
-  text-decoration: none;
-  border-radius: 30px; 
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.2s ease;
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 24px;
+    background-color: #111;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
 .shop-now-btn:hover {
-  background-color: #707072; 
-  transform: scale(1.05); /* Phóng to nhẹ khi di chuột */
+    background-color: #707072;
+    transform: scale(1.05);
 }
 
-.featured-card:hover .product-name {
-  text-decoration: underline;
+@media (max-width: 768px) {
+    .scroll-btn {
+        display: none;
+    }
+
+    .featured-card {
+        min-width: 280px;
+    }
 }

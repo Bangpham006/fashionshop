@@ -1,62 +1,110 @@
-.hero-container {
+.hero-slider {
     width: 100%;
     background-color: #fff;
+    margin-bottom: 20px;
 }
 
 .hero-image-wrapper {
-    padding: 0 48px; 
+    /* Đảm bảo wrapper cho phép nội dung bên trong căn giữa */
+    display: flex;
+    justify-content: center;
+    padding: 0 15px;
+    background-color: #fff;
 }
 
 .hero-img {
-    width: 100%;
-    height: auto;
-    display: block;
+    width: 85%;
+    aspect-ratio: 16 / 7;
+    max-height: 450px;
+    margin: 0 auto;
     object-fit: cover;
+
+    display: block;
+    border-radius: 10px;
 }
 
 .hero-content {
     text-align: center;
-    padding: 40px 20px;
+    /* THU HẸP PADDING DỌC */
+    padding: 20px 10px 40px 10px;
 }
 
 .hero-sub-title {
-    font-size: 16px;
+    font-size: 14px;
+    /* Nhỏ lại chút */
     font-weight: 500;
     margin-bottom: 4px;
+    color: #111;
 }
 
 .hero-main-title {
-    font-size: 72px; 
-    font-weight: 900;
-    line-height: 1;
+    /* GIẢM SIZE CHỮ CHÍNH */
+    font-size: 48px;
+    /* Giảm từ 60px xuống 48px */
+    font-weight: 950;
+    line-height: 0.95;
+    letter-spacing: -2px;
     margin: 0 0 15px 0;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
     font-style: italic;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.hero-description {
-    font-size: 16px;
-    margin-bottom: 25px;
-}
-
-.btn-black {
-    background-color: #000;
+/* STYLE NÚT BẤM (GIỮ NGUYÊN VÌ ĐÃ ĐẸP) */
+.hero-btn-black {
+    background-color: #111;
     color: #fff;
-    padding: 8px 24px;
+    padding: 10px 28px;
     border-radius: 30px;
     border: none;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s ease;
+    display: inline-block;
 }
 
-.btn-black:hover {
-    background-color: #757575;
+.hero-btn-black:hover {
+    background-color: #707072;
+    transform: scale(1.05);
 }
-.hero-img {
-  width: 100%;
-  height: 600px; /* Khung cố định */
-  object-fit: contain; /* Hiện toàn bộ ảnh, không cắt */
-  background-color: #f0f0f0; /* Màu nền cho phần bị trống */
+
+/* CUSTOM SWIPER (LÀM CÁC CHẤM Pagination NHỎ LẠI) */
+.swiper-pagination-bullet {
+    width: 6px;
+    /* Nhỏ lại chút */
+    height: 6px;
+    background: #ccc;
+    opacity: 1;
+}
+
+.swiper-pagination-bullet-active {
+    background: #000 !important;
+}
+
+/* LÀM MŨI TÊN NAVIGATION TINH TẾ HƠN */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #000 !important;
+    background: rgba(255, 255, 255, 0.7);
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50%;
+    transform: scale(0.6);
+    /* Thu nhỏ mũi tên navigation lại */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 16px !important;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .hero-img {
+        width: 95%;
+        /* Trên mobile nên để rộng hơn */
+        aspect-ratio: 4 / 3;
+    }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import LoadingCircles from '../Loading-circles';
-import { Link } from 'react-router-dom'; // QUAN TRỌNG: Thêm dòng này để điều hướng
+import { Link } from 'react-router-dom';
 import axios from 'axios';
+import LoadingCircles from '../Loading-circles';
 import './Featured.css';
 
 const Featured = () => {
@@ -14,9 +14,9 @@ const Featured = () => {
       try {
         const response = await axios.get('http://localhost:8080/api/products/featured');
         setFeaturedProducts(response.data);
-        setLoading(false);
       } catch (error) {
-        console.error("Lỗi khi lấy sản phẩm nổi bật:", error);
+        console.error("Error:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -25,61 +25,76 @@ const Featured = () => {
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 400;
-      scrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
+      const { scrollLeft, clientWidth } = scrollRef.current;
+
+      const scrollTo = direction === 'left'
+        ? scrollLeft - clientWidth * 0.8
+        : scrollLeft + clientWidth * 0.8;
+
+      scrollRef.current.scrollTo({
+        left: scrollTo,
         behavior: 'smooth'
       });
     }
   };
 
-  if (loading) {
-    return <LoadingCircles />;
-  }
+  if (loading) return <LoadingCircles />;
 
   return (
     <section className="featured-section">
       <div className="container">
         <div className="featured-header">
           <h2 className="featured-title">Trending</h2>
-          <div className="featured-controls">
-            <button className="scroll-btn" onClick={() => handleScroll('left')}>❮</button>
-            <button className="scroll-btn" onClick={() => handleScroll('right')}>❯</button>
-          </div>
         </div>
 
-        <div className="featured-scroll-wrapper" ref={scrollRef}>
-          {featuredProducts.length > 0 ? (
-            featuredProducts.map((product) => (
-              <div key={product.productId} className="featured-card">
-                {/* Click vào ảnh cũng dẫn đến trang chi tiết */}
-                <Link to={`/product/${product.slug}`}>
-                  <div className="card-img">
-                    <img
-                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x400'}
-                      alt={product.name}
-                    />
-                    <div className="card-tag">Hot</div>
-                  </div>
-                </Link>
+        <div className="featured-relative-container">
 
-                <div className="card-info">
-                  <h4 className="product-name">{product.name}</h4>
-                  <p className="product-subtext">{product.gender}'s {product.type}</p>
-                  <p className="product-price">
-                    {Number(product.basePrice).toLocaleString('vi-VN')} ₫
-                  </p>
+          <button
+            className="scroll-btn prev-btn"
+            onClick={() => handleScroll('left')}
+            aria-label="Previous"
+          >
+            ❮
+          </button>
 
-                  {/* NÚT SHOP NOW MỚI */}
-                  <Link to={`/product/${product.slug}`} className="shop-now-btn">
-                    Shop Now
+          <div className="featured-scroll-wrapper" ref={scrollRef}>
+            {featuredProducts.length > 0 ? (
+              featuredProducts.map((product) => (
+                <div key={product.productId} className="featured-card">
+                  <Link to={`/product/${product.slug}`}>
+                    <div className="card-img">
+                      <img
+                        src={product.images?.[0] || 'https://via.placeholder.com/300x400'}
+                        alt={product.name}
+                      />
+                      <div className="card-tag">Hot</div>
+                    </div>
                   </Link>
+
+                  <div className="card-info">
+                    <h4 className="product-name">{product.name}</h4>
+                    <p className="product-subtext">{product.gender}'s {product.type}</p>
+                    <p className="product-price">
+                      {Number(product.basePrice).toLocaleString('vi-VN')} ₫
+                    </p>
+                    <Link to={`/product/${product.slug}`} className="shop-now-btn">
+                      Shop Now
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="empty-msg">Hiện chưa có sản phẩm nổi bật nào.</p>
-          )}
+              ))
+            ) : (
+              <p className="empty-msg">No featured products available.</p>
+            )}
+          </div>
+
+          <button
+            className="scroll-btn next-btn"
+            onClick={() => handleScroll('right')}
+            aria-label="Next"
+          >
+            ❯
+          </button>
         </div>
       </div>
     </section>

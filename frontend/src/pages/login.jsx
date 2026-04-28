@@ -1,54 +1,65 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Dùng Link thay vì thẻ <a>
-
-/**
- * FILE LOGIN ĐÃ SỬA:
- * 1. Cập nhật các đường dẫn Register và Forgot Password có /auth/
- * 2. Sử dụng <Link> để trang không bị load lại (F5).
- * 3. Giữ nguyên logic xử lý đăng nhập với Backend.
- */
+import { Link, useNavigate } from 'react-router-dom'; 
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
 
         try {
-            // Đảm bảo Backend của bạn đang chạy ở cổng 8080
+            // Đảm bảo URL này khớp với cổng Backend của bạn (thường là 8080)
             const response = await axios.post("http://localhost:8080/api/auth/login", {
                 username: username,
                 password: password
             });
 
             const data = response.data;
+            
+            // BƯỚC KIỂM TRA QUAN TRỌNG: 
+            console.log("Dữ liệu đầy đủ từ Backend trả về:", data);
 
             if (data.token) {
+                // 1. Lưu Token và thông tin cơ bản
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("username", data.username);
-                localStorage.setItem("role", data.roles);
+                localStorage.setItem("role", data.roles || data.role);
 
-                // Chuyển về trang chủ sau khi đăng nhập thành công
+                // 2. TRUY QUÉT USER ID:
+                const userId = data.id || data._id || (data.user && (data.user.id || data.user._id)); 
+                
+                if (userId) {
+                    localStorage.setItem("userId", String(userId));
+                    console.log("Đã lưu userId vào máy:", userId);
+                    
+                    alert("Đăng nhập thành công! ID: " + userId);
+                } else {
+                    console.error("CẢNH BÁO: Backend không trả về bất kỳ trường ID nào!", data);
+                    alert("Lỗi: Không tìm thấy ID người dùng trong dữ liệu trả về.");
+                }
+
+                // 3. ĐIỀU HƯỚNG
                 setTimeout(() => {
-                    window.location.href = '/';
-                }, 500);
+                    window.location.href = '/'; 
+                }, 200);
             }
         } catch (err) {
             setError('Username or password is incorrect!');
-            console.error(err);
+            console.error("Lỗi đăng nhập chi tiết:", err);
         }
     };
 
     return (
         <div style={styles.container}>
             <form onSubmit={handleLogin} style={styles.card}>
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>LOGIN</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '25px', letterSpacing: '2px', fontWeight: '800' }}>LOGIN</h2>
 
-                {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+                {error && <p style={{ color: '#ff0000', textAlign: 'center', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
 
                 <div style={styles.inputGroup}>
                     <input
@@ -72,15 +83,16 @@ function Login() {
                     />
                 </div>
 
-                {/* Dùng Link để khớp với App.js đã sửa */}
-                <p style={{ fontSize: '14px' }}>
-                    Don't have an account? <Link to="/auth/register" style={styles.link}>Register</Link>
-                </p>
-                <p style={{ fontSize: '14px' }}>
-                    <Link to="/auth/forgot-password" style={styles.link}>Forgot password?</Link>
-                </p>
+                <div style={{ marginTop: '15px', textAlign: 'left' }}>
+                    <p style={{ fontSize: '13px', margin: '5px 0', color: '#666' }}>
+                        Don't have an account? <Link to="/auth/register" style={styles.link}>Register</Link>
+                    </p>
+                    <p style={{ fontSize: '13px', margin: '5px 0', color: '#666' }}>
+                        <Link to="/auth/forgot-password" style={styles.link}>Forgot password?</Link>
+                    </p>
+                </div>
 
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
                     <button type="submit" style={styles.button}>Login</button>
                 </div>
             </form>
@@ -89,47 +101,45 @@ function Login() {
 };
 
 const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center', // Căn giữa theo chiều dọc cho đẹp
-        height: '80vh',
+    container: { 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '90vh',
+        backgroundColor: '#f5f5f5' 
     },
-    card: {
-        padding: '40px',
-        borderRadius: '12px',
-        width: '100%',
-        maxWidth: '400px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)' // Thêm chút bóng đổ cho chuyên nghiệp
+    card: { 
+        padding: '50px 40px', 
+        borderRadius: '15px', 
+        width: '100%', 
+        maxWidth: '420px', 
+        boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
+        backgroundColor: '#fff' 
     },
-    inputGroup: {
-        marginBottom: '15px'
+    inputGroup: { marginBottom: '20px' },
+    input: { 
+        width: '100%', 
+        padding: '14px 20px', 
+        borderRadius: '30px', 
+        border: '1px solid #eee', 
+        boxSizing: 'border-box', 
+        outline: 'none', 
+        backgroundColor: '#f9f9f9',
+        fontSize: '15px'
     },
-    input: {
-        width: '100%',
-        padding: '12px',
-        marginTop: '5px',
-        borderRadius: '25px', // Bo tròn hơn một chút
-        border: '1px solid #ddd',
-        boxSizing: 'border-box',
-        outline: 'none'
-    },
-    button: {
-        width: '50%', // Tăng độ rộng nút bấm cho dễ click
-        padding: '12px',
-        backgroundColor: '#000000',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '30px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        transition: 'background 0.3s'
-    },
-    link: {
-        color: '#000',
+    button: { 
+        width: '100%', 
+        padding: '14px', 
+        backgroundColor: '#000', 
+        color: '#fff', 
+        border: 'none', 
+        borderRadius: '30px', 
+        cursor: 'pointer', 
+        fontSize: '16px', 
         fontWeight: 'bold',
-        textDecoration: 'none'
-    }
+        transition: '0.3s opacity'
+    },
+    link: { color: '#000', fontWeight: 'bold', textDecoration: 'none', borderBottom: '1px solid #000' }
 };
 
 export default Login;

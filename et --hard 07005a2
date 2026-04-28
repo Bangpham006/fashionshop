@@ -1,0 +1,19 @@
+[33m39f20ea[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull origin main: Fast-forward
+[33m07005a2[m HEAD@{1}: commit: lam search bar
+[33maa23830[m HEAD@{2}: commit: ban sua loi product
+[33m3aab46a[m HEAD@{3}: commit: Fix: cast productId to ObjectId and update variant logic
+[33md19e041[m HEAD@{4}: pull origin main: Merge made by the 'ort' strategy.
+[33mad67eb5[m HEAD@{5}: commit: cau hinh lai mongo atlas
+[33m554c8a6[m HEAD@{6}: commit (merge): xong home page va sua lai product controller
+[33meea8295[m HEAD@{7}: commit: xong herobaner
+[33m433fb8e[m HEAD@{8}: pull origin main: Fast-forward
+[33ma53baeb[m HEAD@{9}: commit (merge): them sort cho product,sua lai file dang nhap de add sp de hon
+[33m07dbf6d[m HEAD@{10}: commit: fix lai product , them sort
+[33m610a62a[m HEAD@{11}: commit (amend): xong service controller model , chua vali except
+[33m587d64b[m HEAD@{12}: reset: moving to 587d64befde8280b4778f21a8038876d72e430ce
+[33ma47a370[m HEAD@{13}: commit (amend): Merge remote-tracking branch 'origin/main'
+[33m5c07791[m HEAD@{14}: commit (merge): Merge remote-tracking branch 'origin/main'
+[33m587d64b[m HEAD@{15}: commit (amend): xong service controller model , chua vali except
+[33me467e19[m HEAD@{16}: commit: xong service controller model chua vali lai
+[33m19d0587[m HEAD@{17}: Branch: renamed refs/heads/master to refs/heads/main
+[33m19d0587[m HEAD@{19}: commit (initial): commit lan 1 test

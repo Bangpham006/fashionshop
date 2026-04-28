@@ -3,10 +3,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
 
-// 1. Import đầy đủ 3 ảnh từ thư mục image
+// Import ảnh từ thư mục của bạn
 import lifestyleImg from '../../image/lifestyle.jpg';
 import sportImg from '../../image/sport.jpg';
-// import accessoriesImg from '../image/lifestyle1.jpg'; // Dùng lifestyle1 cho mục phụ kiện
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -16,7 +15,6 @@ import './Hero.css';
 const Hero = () => {
   const navigate = useNavigate();
 
-  // 2. Cấu hình nội dung cho 3 Banner
   const bannerData = [
     {
       id: 1,
@@ -31,14 +29,7 @@ const Hero = () => {
       subTitle: "Classic Comfort",
       title: "MODERN ESSENTIALS",
       type: "lifestyle"
-    },
-    // {
-    //   id: 3,
-    //   image: accessoriesImg,
-    //   subTitle: "Complete Your Look",
-    //   title: "THE FINAL TOUCH",
-    //   type: "accessories"
-    // }
+    }
   ];
 
   return (
@@ -50,7 +41,7 @@ const Hero = () => {
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
-        loop={true} // Thêm vòng lặp để slide mượt mà hơn
+        loop={true}
       >
         {bannerData.map((item) => (
           <SwiperSlide key={item.id}>
@@ -62,7 +53,7 @@ const Hero = () => {
                 <p className="hero-sub-title">{item.subTitle}</p>
                 <h1 className="hero-main-title">{item.title}</h1>
                 <button
-                  className="btn-black"
+                  className="hero-btn-black"
                   onClick={() => navigate(`/products?type=${item.type}`)}
                 >
                   Shop Now
