@@ -12,12 +12,20 @@ const ProductManagement = () => {
     const [categories, setCategories] = useState([]);
 
     const [formData, setFormData] = useState({
-        name: '', slug: '', description: '', categoryId: '',
-        brand: '', gender: 'Male', type: 'Clothe', basePrice: 0,
-        images: [], isFeatured: false, isActive: true
+        name: '',
+        slug: '',
+        description: '',
+        categoryId: '',
+        brand: '',
+        gender: 'Male',
+        type: 'Clothe',
+        basePrice: 0,
+        images: [],
+        isFeatured: false,
+        isActive: true
     });
-
     const [variants, setVariants] = useState([]);
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         fetchInitialData();
@@ -72,14 +80,33 @@ const ProductManagement = () => {
             } catch (error) { setVariants([]); }
         } else {
             setEditingProduct(null);
-            setFormData({ name: '', slug: '', description: '', categoryId: '', brand: '', gender: 'Male', type: 'Clothe', basePrice: 0, images: [], isFeatured: false, isActive: true });
+            setFormData({
+                name: '',
+                slug: '',
+                description: '',
+                categoryId: '',
+                brand: '',
+                gender: 'Male',
+                type: 'Clothe',
+                basePrice: 0,
+                images: [],
+                isFeatured: false,
+                isActive: true
+            });
             setVariants([]);
         }
         setIsModalOpen(true);
     };
 
     const addNewVariantRow = () => {
-        setVariants([...variants, { size: '', color: '', price: formData.basePrice, stock: 0, sku: '', variantImage: '' }]);
+        setVariants([...variants, {
+            size: '',
+            color: '',
+            price: formData.basePrice,
+            stock: 0,
+            sku: '',
+            variantImage: ''
+        }]);
     };
 
     const updateVariantField = (index, field, value) => {
@@ -109,8 +136,28 @@ const ProductManagement = () => {
             }
 
             const variantPromises = variants.map(v => {
-                const payload = { ...v, productId: currentProductId };
-                return v.id ? axios.put(`http://localhost:8080/api/variants/${v.id}`, payload) : axios.post(`http://localhost:8080/api/variants`, payload);
+                // 1. Tạo payload sạch, ép kiểu dữ liệu
+                const payload = {
+                    ...v,
+                    productId: currentProductId,
+                    price: v.price ? parseFloat(v.price) : formData.basePrice, // Fallback về basePrice nếu để trống
+                    stock: v.stock ? parseInt(v.stock, 10) : 0,
+                    // Đảm bảo không gửi chuỗi rỗng cho các trường ID nếu là tạo mới
+                    id: v.id || null
+                };
+
+                // 2. Kiểm tra logic POST hay PUT dựa trên sự tồn tại thực sự của ID
+                if (v.id && v.id !== "") {
+                    return axios.put(`http://localhost:8080/api/variants/${v.id}`, payload);
+                } else {
+                    // Khi POST (tạo mới), ta nên xóa trường id khỏi payload để tránh lỗi Backend Mapping
+                    const { id, ...newVariantPayload } = payload;
+                    return axios.post(`http://localhost:8080/api/variants`, newVariantPayload, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }
             });
 
             await Promise.all(variantPromises);
@@ -222,7 +269,13 @@ const ProductManagement = () => {
                                 <table className="variant-form-table">
                                     <thead>
                                         <tr>
-                                            <th>Img</th><th>Size</th><th>Color</th><th>Price</th><th>Stock</th><th>SKU</th><th></th>
+                                            <th>Img</th>
+                                            <th>Size</th>
+                                            <th>Color</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>SKU</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>

@@ -38,19 +38,22 @@ public class UserConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> {
-                    var cfg = new org.springframework.web.cors.CorsConfiguration();
-                    cfg.setAllowedOrigins(java.util.List.of("http://localhost:3000"));
-                    cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    cfg.setAllowedHeaders(java.util.List.of("*"));
-                    return cfg;
-                }))
+            var cfg = new org.springframework.web.cors.CorsConfiguration();
+            cfg.setAllowedOrigins(java.util.List.of("http://localhost:3000"));
+            cfg.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            cfg.setAllowedHeaders(java.util.List.of("*"));
+            return cfg;
+        }))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
-                        .anyRequest().permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/products/**").permitAll()
+                .requestMatchers("/api/categories/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

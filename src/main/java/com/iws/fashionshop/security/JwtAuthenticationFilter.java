@@ -1,10 +1,11 @@
 package com.iws.fashionshop.security;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -29,32 +30,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 1. Lấy JWT từ request header
             String jwt = getJwtFromRequest(request);
 
-            // 2. Chỉ xử lý xác thực NẾU có token gửi lên
+            // 2. Chỉ xử lý xác thực NẾU có token gửi lên và token đó hợp lệ
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+
+                // Lấy Username từ JWT
                 String username = tokenProvider.getUsernameFromJWT(jwt);
 
-                // Tạo đối tượng xác thực
+                /* * QUAN TRỌNG: Lấy danh sách quyền (Authorities/Roles) từ Claims trong Token.
+                 * Trước đây bạn dùng Collections.emptyList(), dẫn đến lỗi 403 
+                 * vì Spring Security nghĩ User này không có quyền gì.
+                 */
+                List<GrantedAuthority> authorities = tokenProvider.getAuthoritiesFromJWT(jwt);
+
+                // 3. Tạo đối tượng xác thực với đầy đủ Username và Authorities
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, Collections.emptyList()
+                        username,
+                        null,
+                        authorities // Nạp danh sách ROLE_ADMIN hoặc ADMIN vào đây
                 );
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Lưu vào SecurityContext để các bước sau biết user đã login
+                // 4. Lưu vào SecurityContext để các API sau (như /api/variants) kiểm tra được quyền
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            // Nếu không có token, ta cứ để mặc định cho filterChain chạy tiếp.
-            // Spring Security sẽ check file UserConfig xem URL này có cho phép khách (Anonymous) vào không.
 
         } catch (Exception ex) {
-            // Chỉ log lỗi khi có sự cố thực sự, không log khi thiếu token thông thường
+            // Log lỗi nếu quá trình giải mã token hoặc nạp quyền gặp sự cố
             logger.error("Could not set user authentication in security context", ex);
         }
 
-        // Quan trọng: Phải luôn gọi dòng này để request đi tiếp
+        // Luôn gọi filterChain để request tiếp tục đi tới Controller
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Hàm hỗ trợ bóc tách chuỗi JWT từ Header Authorization
+     */
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

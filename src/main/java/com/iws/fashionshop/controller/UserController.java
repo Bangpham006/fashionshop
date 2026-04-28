@@ -57,7 +57,7 @@ public class UserController {
             User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
             // 2. Nếu đúng, tạo Token
-            String jwt = tokenProvider.generateToken(user.getUsername());
+            String jwt = tokenProvider.generateToken(user.getUsername(), user.getRoles());
 
             // 3. Trả về Token cho Postman
             return ResponseEntity.ok(new LoginResponse(jwt, user.getUsername(), user.getEmail(), user.getRoles()));

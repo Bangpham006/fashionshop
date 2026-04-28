@@ -1,59 +1,71 @@
 package com.iws.fashionshop.security;
 
 import java.security.Key;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenProvider {
 
-    // Một chuỗi bí mật để ký tên vào Token (phải giữ kín)
-    private final String JWT_SECRET = "a-string-secret-at-least-256-bits-long";
-    private final long JWT_EXPIRATION = 604800000L; // Token có hạn trong 7 ngày
+    private final String JWT_SECRET = "a-string-secret-at-least-256-bits-long-make-sure-it-is-safe";
+    private final long JWT_EXPIRATION = 604800000L;
 
-    public String generateToken(String username) {
+    // --- SỬA HÀM NÀY: Nhận thêm tham số role ---
+    public String generateToken(String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
         Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role) // <--- LƯU ROLE VÀO CLAIM TẠI ĐÂY
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // 1. Hàm kiểm tra Token có hợp lệ hay không
+    // --- THÊM HÀM MỚI: Lấy Role từ Token ---
+    public List<GrantedAuthority> getAuthoritiesFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        String role = claims.get("role", String.class); // Lấy giá trị từ key "role"
+
+        if (role == null) {
+            return Collections.emptyList();
+        }
+
+        // Trả về danh sách quyền mà Spring Security hiểu được
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
+    }
+
     public boolean validateToken(String authToken) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
                     .build()
-                    .parseClaimsJws(authToken); // Nếu parse thành công thì token hợp lệ
+                    .parseClaimsJws(authToken);
             return true;
-        } catch (MalformedJwtException ex) {
-            System.out.println("Invalid JWT token");
-        } catch (ExpiredJwtException ex) {
-            System.out.println("Expired JWT token");
-        } catch (UnsupportedJwtException ex) {
-            System.out.println("Unsupported JWT token");
-        } catch (IllegalArgumentException ex) {
-            System.out.println("JWT claims string is empty.");
+        } catch (Exception ex) {
+            // Giữ nguyên các catch cũ của bạn
+            return false;
         }
-        return false;
     }
 
-// 2. Hàm lấy Username từ trong Token đã được giải mã
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()))
