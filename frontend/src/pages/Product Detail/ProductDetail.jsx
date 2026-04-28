@@ -14,33 +14,26 @@ const ProductDetail = () => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const username = localStorage.getItem("username");
+    // TRẠNG THÁI HIỆN POPUP (MODAL)
+    const [showModal, setShowModal] = useState(false);
+
+    // LẤY USERID TỪ LOCAL STORAGE (BƯỚC QUAN TRỌNG VỪA FIX XONG)
+    const userId = localStorage.getItem("userId");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // 1. Lấy thông tin sản phẩm từ slug
                 const productRes = await axios.get(`http://localhost:8080/api/products/slug/${slug}`);
                 const productData = productRes.data;
                 setProduct(productData);
 
-                // Kiểm tra ID: Ưu tiên lấy productId (từ Java) hoặc _id (từ MongoDB)
                 const pId = productData.productId || productData.id || productData._id;
-                console.log("ID dùng để gọi API Variant:", pId);
 
                 if (pId) {
-                    // 2. Lấy danh sách variants theo productId
                     const variantsRes = await axios.get(`http://localhost:8080/api/variants/product/${pId}`);
-                    console.log("Dữ liệu Variants nhận được:", variantsRes.data);
-
                     const data = Array.isArray(variantsRes.data) ? variantsRes.data : [];
-
-                    // Sắp xếp size tăng dần
-                    const sortedVariants = data.sort((a, b) => {
-                        return parseFloat(a.size) - parseFloat(b.size);
-                    });
-
+                    const sortedVariants = data.sort((a, b) => parseFloat(a.size) - parseFloat(b.size));
                     setVariants(sortedVariants);
                 }
             } catch (error) {
@@ -49,12 +42,11 @@ const ProductDetail = () => {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, [slug]);
 
     const handleAddToCart = async () => {
-        if (!username) {
+        if (!userId) {
             alert("Please login first!");
             navigate('/auth/login');
             return;
@@ -66,16 +58,23 @@ const ProductDetail = () => {
         }
 
         try {
+            // GỬI USERID LÊN BACKEND THAY VÌ USERNAME
             await axios.post(`http://localhost:8080/api/cart/add`, null, {
                 params: {
-                    username: username,
+                    userId: userId, // Dùng ID vừa lấy được
                     variantId: selectedVariant.id || selectedVariant._id,
                     quantity: 1
                 }
             });
-            alert("Successfully added to cart!");
+
+            // HIỆN POPUP THÔNG BÁO THÀNH CÔNG
+            setShowModal(true);
+
+            // Tự động đóng sau 5 giây nếu người dùng không bấm gì
+            setTimeout(() => setShowModal(false), 5000);
+
         } catch (error) {
-            alert("Failed to add to cart. Please try again.");
+            alert("Failed to add to cart. Please check Backend API.");
         }
     };
 
@@ -86,6 +85,32 @@ const ProductDetail = () => {
 
     return (
         <div className="pdp-container">
+            {/* --- POPUP (MODAL) GIỐNG NIKE --- */}
+            {showModal && (
+                <div className="nike-modal-overlay">
+                    <div className="nike-modal">
+                        <div className="modal-header">
+                            <span className="success-icon">✔</span>
+                            <span>Added to Bag</span>
+                            <button className="close-btn" onClick={() => setShowModal(false)}>✕</button>
+                        </div>
+                        <div className="modal-body">
+                            <img src={product.images?.[0]} alt="" />
+                            <div className="item-info">
+                                <h4>{product.name}</h4>
+                                <p>Size: {selectedVariant?.size}</p>
+                                <p >Color: {selectedVariant?.color}</p>
+                                <p>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedVariant?.price || product.basePrice)}</p>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="view-bag-btn" onClick={() => navigate('/cart')}>View Bag</button>
+                            <button className="checkout-btn" onClick={() => navigate('/checkout')}>Checkout</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="pdp-left">
                 <img src={product.images?.[0]} alt={product.name} />
             </div>
@@ -100,31 +125,25 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="pdp-selection">
-                    <div className="selection-header">
-                        <h3>Select Size</h3>
-                    </div>
-
+                    <h3>Select Size</h3>
                     <div className="size-grid">
-                        {variants.length > 0 ? (
-                            variants.map((v) => {
-                                const isSelected = (selectedVariant?.id || selectedVariant?._id) === (v.id || v._id);
-                                const outOfStock = (v.stock || 0) <= 0;
-
-                                return (
-                                    <button
-                                        key={v.id || v._id}
-                                        className={`size-item ${isSelected ? 'active' : ''} ${outOfStock ? 'disabled' : ''}`}
-                                        disabled={outOfStock}
-                                        onClick={() => setSelectedVariant(v)}
-                                    >
-                                        <span className="size-number">{v.size}</span>
-                                        {v.color && <span className="pdp-variant-color">{v.color}</span>}
-                                    </button>
-                                );
-                            })
-                        ) : (
-                            <p className="no-size-msg">This product is currently out of stock or size information is not available.</p>
-                        )}
+                        {variants.map((v) => {
+                            const isSelected = (selectedVariant?.id || selectedVariant?._id) === (v.id || v._id);
+                            const outOfStock = (v.stock || 0) <= 0;
+                            return (
+                                <button
+                                    key={v.id || v._id}
+                                    className={`size-item ${isSelected ? 'active' : ''} ${outOfStock ? 'disabled' : ''}`}
+                                    disabled={outOfStock}
+                                    onClick={() => setSelectedVariant(v)}
+                                >
+                                    {v.size}
+                                    <div className="color-label" style={{ fontSize: '10px', color: '#757575' }}>
+                                        {v.color}
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 

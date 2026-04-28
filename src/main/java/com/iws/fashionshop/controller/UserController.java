@@ -25,6 +25,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
@@ -38,7 +41,6 @@ public class UserController {
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         boolean isReset = userService.resetPassword(request);
-
         if (isReset) {
             return ResponseEntity.ok("Mật khẩu đã được thay đổi thành công!");
         } else {
@@ -47,42 +49,40 @@ public class UserController {
         }
     }
 
-    @Autowired
-    private JwtTokenProvider tokenProvider;
-
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
         try {
-            // 1. Kiểm tra User/Pass trong MongoDB
             User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-
-            // 2. Nếu đúng, tạo Token
             String jwt = tokenProvider.generateToken(user.getUsername(), user.getRoles());
-
-            // 3. Trả về Token cho Postman
-            return ResponseEntity.ok(new LoginResponse(jwt, user.getUsername(), user.getEmail(), user.getRoles()));
+            return ResponseEntity.ok(new LoginResponse(
+                    jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getEmail(),
+                    user.getRoles()
+            ));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
-    // Lớp phụ để định dạng JSON trả về
     @Getter
     @Setter
     public static class LoginResponse {
 
         private String token;
+        private String id;
         private String type = "Bearer";
         private String username;
         private String email;
         private String roles;
 
-        public LoginResponse(String accessToken, String username, String email, String roles) {
+        public LoginResponse(String accessToken, String id, String username, String email, String roles) {
             this.token = accessToken;
+            this.id = id;
             this.username = username;
             this.email = email;
             this.roles = roles;
         }
     }
-
 }
