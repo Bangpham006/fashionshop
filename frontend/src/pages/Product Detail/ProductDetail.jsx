@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
+import LoadingCircles from '../../components/Loading-circles';
 import axios from 'axios';
 import './ProductDetail.css';
 
@@ -77,7 +79,9 @@ const ProductDetail = () => {
         }
     };
 
-    if (loading) return <div className="loading">Loading product...</div>;
+    if (loading) {
+        return <LoadingCircles />;
+    }
     if (!product) return <div className="error">Product not found.</div>;
 
     return (
