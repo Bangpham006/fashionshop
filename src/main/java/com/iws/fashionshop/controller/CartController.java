@@ -1,75 +1,62 @@
 package com.iws.fashionshop.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.iws.fashionshop.model.Cart;
 import com.iws.fashionshop.service.CartService;
 
 @RestController
 @RequestMapping("/api/cart")
+@CrossOrigin(origins = "http://localhost:3000") // Cụ thể cổng của React
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
-    /**
-     * 1. LẤY GIỎ HÀNG (READ) Mục tiêu: Khi User vào trang Giỏ hàng, hệ thống
-     * cần load danh sách món đồ họ đã chọn.
-     *
-     * @param userId: ID của người dùng (lấy từ Path Variable)
-     */
-    @GetMapping("/{userId}")
+    // 1. LẤY GIỎ HÀNG (Giữ nguyên vì dùng PathVariable là đúng rồi)
+    @GetMapping("/user/{userId}")
     public ResponseEntity<Cart> getCart(@PathVariable String userId) {
-        // Bước 1: Gọi Service để tìm giỏ hàng.
-        // Bước 2: Nếu Service trả về dữ liệu, bọc nó trong ResponseEntity với Status 200 OK.
         Cart cart = cartService.getCartByUserId(userId);
         return ResponseEntity.ok(cart);
     }
 
+    // 2. THÊM VÀO GIỎ HÀNG (Sửa thành RequestParam để khớp với React)
     @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(
+    public ResponseEntity<?> addToCart(
             @RequestParam String userId,
             @RequestParam String variantId,
-            @RequestParam Integer quantity) {
+            @RequestParam(defaultValue = "1") int quantity) {
 
-        // Bước 1: Chuyển dữ liệu xuống Service xử lý logic kiểm tra trùng lặp (Logic này đã viết ở CartService).
-        // Bước 2: Nhận lại đối tượng Cart đã được cập nhật sau khi lưu vào MongoDB.
-        Cart updatedCart = cartService.addToCart(userId, variantId, quantity);
+        // Chặn lỗi ID rác
+        if (userId == null || "undefined".equals(userId) || userId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User ID không hợp lệ!");
+        }
 
-        // Bước 3: Trả về kết quả cho Client thấy giỏ hàng mới nhất.
-        return ResponseEntity.ok(updatedCart);
+        try {
+            Cart updatedCart = cartService.addToCart(userId, variantId, quantity);
+            return ResponseEntity.ok(updatedCart);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi Backend: " + e.getMessage());
+        }
     }
 
-    /**
-     * 3. XÓA MỘT MÓN KHỎI GIỎ (DELETE ITEM)
-     */
+    // 3. XÓA MÓN
     @DeleteMapping("/remove")
     public ResponseEntity<Cart> removeItem(
             @RequestParam String userId,
             @RequestParam String variantId) {
-
-        // Bước 1: Gọi hàm xóa item dựa trên variantId trong danh sách items của User đó.
         Cart updatedCart = cartService.removeItemFromCart(userId, variantId);
         return ResponseEntity.ok(updatedCart);
     }
 
-    /**
-     * 4. LÀM TRỐNG GIỎ HÀNG Dùng sau khi khách đã đặt hàng thành công
-     */
+    // 4. LÀM TRỐNG GIỎ HÀNG
     @DeleteMapping("/clear/{userId}")
     public ResponseEntity<String> clearCart(@PathVariable String userId) {
-        // Bước 1: Gọi Service xóa sạch mảng items trong Document Cart.
         cartService.clearCart(userId);
-
-        // Bước 2: Trả về thông báo thành công
-        return ResponseEntity.ok("Giỏ hàng của người dùng " + userId + " đã được làm trống.");
+        return ResponseEntity.ok("Cart cleared successfully");
     }
 }
