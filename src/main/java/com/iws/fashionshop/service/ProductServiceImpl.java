@@ -1,12 +1,17 @@
 package com.iws.fashionshop.service;
 
-import com.iws.fashionshop.model.Product;
-import com.iws.fashionshop.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import com.iws.fashionshop.model.Product;
+import com.iws.fashionshop.repository.ProductRepository;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -105,8 +110,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<Product> searchProducts(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<Product> searchProducts(String keyword, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         return productRepository.findByNameContainingIgnoreCaseAndIsActiveTrue(keyword, pageable);
     }
 

@@ -2,85 +2,89 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Navbar.css';
 import { useNavigate, Link } from 'react-router-dom';
-import { Search, ChevronDown, ShoppingBag, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
-  const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false)
-  const [categories, setCategories] = useState([])
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/categories');
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Lỗi khi tải danh sách phân loại:", error);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // 1. Thêm state để lưu từ khóa tìm kiếm
+  const [categories, setCategories] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 2. Hàm xử lý tìm kiếm
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/categories')
+      .then(res => setCategories(res.data))
+      .catch(err => console.error(err));
+
+    // Xử lý reset state khi resize màn hình từ Mobile sang Desktop
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMenuOpen(false);
+        setOpenMenu(null);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const parentCategories = categories.filter(c => c.level === 1);
+
   const handleSearch = (e) => {
-    // Nếu là sự kiện bàn phím và không phải phím Enter thì bỏ qua
-    if (e.key && e.key !== 'Enter') return;
-
-    if (searchQuery.trim()) {
-      // Chuyển hướng sang trang search với query parameter
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-
-      // Nếu đang ở mobile menu thì đóng menu sau khi search
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/search?q=${searchQuery}`);
       setIsMenuOpen(false);
+      setSearchQuery("");
     }
-
-    setSearchQuery("")
-  };
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State cho Mobile Menu
-
-  const parentCategories = categories.filter(cat => cat.level === 1);
-  const username = localStorage.getItem("username");
-  const userRole = localStorage.getItem("role");
-
-
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/';
   };
 
   return (
     <nav className="nav">
       <div className="nav-container">
-        {/* Nút Burger - Chỉ hiện trên Mobile */}
+
+        {/* MOBILE BUTTON */}
         <button className="mobile-menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X size={24}/> : <Menu size={24}/>}
         </button>
 
-        <div className="nav-logo" onClick={() => { navigate('/'); setIsMenuOpen(false); }} style={{ cursor: 'pointer' }}>
+        {/* LOGO */}
+        <div className="nav-logo" onClick={() => navigate('/')}>
           <div className="logo-square">W</div>
           <span className="brand-name">FASHIONSHOP</span>
         </div>
 
-        <div className="nav-links">
+        {/* MENU */}
+        <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+
           <Link to="/" className="nav-link">New & Featured</Link>
 
           {parentCategories.map(parent => {
-            const subCategories = categories.filter(child => child.parentId === parent.id);
+            const children = categories.filter(c => c.parentId === parent.id);
+
             return (
               <div key={parent.id} className="nav-item">
-                <span className="nav-link">
-                  {parent.name}
-                </span>
 
-                {subCategories.length > 0 && (
-                  <ul className="category-dropdown">
-                    {subCategories.map(child => (
+                <div
+                  className="nav-link"
+                  onClick={() => {
+                    if (window.innerWidth <= 768) {
+                      setOpenMenu(openMenu === parent.id ? null : parent.id);
+                    }
+                  }}
+                >
+                  {parent.name}
+                </div>
+
+                {children.length > 0 && (
+                  <ul className={`category-dropdown ${openMenu === parent.id ? 'show' : ''}`}>
+                    {children.map(child => (
                       <li key={child.id}>
-                        <Link to={`/category/${child.slug}?gender=${parent.name}`} className="dropdown-link">
+                        <Link
+                          to={`/category/${child.slug}`}
+                          className="dropdown-link"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
                           {child.name}
                         </Link>
                       </li>
@@ -92,62 +96,24 @@ const Navbar = () => {
           })}
         </div>
 
+        {/* RIGHT */}
         <div className="nav-utils">
-          {/* 3. Cập nhật ô Search Bar */}
           <div className="search-bar">
-            <Search size={20} />
+            <Search size={18}/>
             <input
-              type="text"
               placeholder="Search"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e)=>setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
             />
           </div>
 
-          {username ? (
-            <div className="user-section">
-              <div className="avatar"></div>
-              <span className="user-name">Hi, {username}</span>
-              <div className="dropdown-container">
-                <button
-                  className={`dropdown-button ${isAccountDropdownOpen ? 'active' : ''}`}
-                  onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-                >
-                  <ChevronDown size={16} color='black' />
-                </button>
-
-                {isAccountDropdownOpen && (
-                  <div className="dropdown-menu">
-                    <div className="dropdown-item" onClick={() => { navigate('/cart'); setIsAccountDropdownOpen(false); }}>
-                      <ShoppingBag size={16} />
-                      <span>View cart</span>
-                    </div>
-
-                    {userRole === "ROLE_ADMIN" && (
-                      <div className="dropdown-item" onClick={() => { navigate('/admin/product-management'); setIsAccountDropdownOpen(false); }}>
-                        <LayoutDashboard size={16} />
-                        <span>Product Management</span>
-                      </div>
-                    )}
-
-                    <div className="dropdown-item logout" onClick={handleLogout}>
-                      <LogOut size={16} />
-                      <span>Sign out</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="user-section">
-              <button
-                className="login-button"
-                onClick={() => navigate('/auth/login')}
-              >Log in</button>
-            </div>
-          )}
+          <div className="user-section">
+            <div className="avatar"></div>
+            <span className="user-name">Hi</span>
+          </div>
         </div>
+
       </div>
     </nav>
   );
