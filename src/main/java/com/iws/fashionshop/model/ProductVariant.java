@@ -7,31 +7,33 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import org.bson.types.ObjectId;
+
 @Data
 @Document(collection = "product_variants")
 public class ProductVariant {
+
     @Id
     private String id;
 
     @Field("productId")
-    private ObjectId productId; //Kết nối với "Cha" Product
+    private ObjectId productId;
 
     @Field("color")
-    private String color; // VD: "Black/Volt/White"
+    private String color;
 
     @Field("size")
-    private String size;  // VD: "42", "42.5", "43"
+    private String size;
 
     @Field("price")
-    private Double price; // Giá có thể khác nhau giữa các màu/size đặc biệt
+    private Double price;
 
     @Min(0)
     @Field("stock")
-    private Integer stock; // CHỐNG LỖI ÂM KHO:
+    private Integer stock;
 
     @Field("sku")
-    private String sku; // Mã quản lý kho (VD: NK-PEG40-BLK-42)
+    private String sku;
 
     @Field("variantImage")
-    private String variantImage; // Ảnh riêng cho màu này
+    private String variantImage;
 }

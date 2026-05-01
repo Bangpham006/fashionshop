@@ -41,7 +41,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     @Override
     @Transactional
     public void addStock(String variantId, int amount) {
-        if (amount <= 0) throw new RuntimeException("Số lượng nhập kho phải lớn hơn 0");
+        if (amount <= 0) {
+            throw new RuntimeException("Số lượng nhập kho phải lớn hơn 0");
+        }
 
         ProductVariant variant = variantRepository.findById(variantId)
                 .orElseThrow(() -> new RuntimeException("Biến thể không tồn tại"));
@@ -64,15 +66,12 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         variantRepository.save(variant);
     }
 
-
     @Override
     public List<ProductVariant> getVariantsByProductId(String productId) {
         try {
-            // Ép kiểu chuỗi ID thành ObjectId của MongoDB
             ObjectId objId = new ObjectId(productId);
             return variantRepository.findByProductId(objId);
         } catch (IllegalArgumentException e) {
-            // Trả về danh sách rỗng nếu ID truyền lên không hợp lệ (tránh crash web)
             return List.of();
         }
     }

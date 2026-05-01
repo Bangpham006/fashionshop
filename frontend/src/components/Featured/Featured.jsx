@@ -50,7 +50,7 @@ const Featured = () => {
         <div className="featured-relative-container">
 
           <button
-            className="scroll-btn prev-btn"
+            className="scroll-button prev-button"
             onClick={() => handleScroll('left')}
             aria-label="Previous"
           >
@@ -77,7 +77,7 @@ const Featured = () => {
                     <p className="product-price">
                       {Number(product.basePrice).toLocaleString('vi-VN')} ₫
                     </p>
-                    <Link to={`/product/${product.slug}`} className="shop-now-btn">
+                    <Link to={`/product/${product.slug}`} className="shop-now-button">
                       Shop Now
                     </Link>
                   </div>
@@ -89,7 +89,7 @@ const Featured = () => {
           </div>
 
           <button
-            className="scroll-btn next-btn"
+            className="scroll-button next-button"
             onClick={() => handleScroll('right')}
             aria-label="Next"
           >

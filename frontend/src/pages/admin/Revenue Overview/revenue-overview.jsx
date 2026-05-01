@@ -8,7 +8,7 @@ const RevenueOverview = () => {
             <div className="revenue-layout">
                 <main className="revenue-main">
                     <div className="revenue-header">
-                        <h1 className="revenue-title">Revenue Overview</h1>
+                        <h2>Revenue Overview</h2>
                     </div>
 
                     <div className="revenue-grid">

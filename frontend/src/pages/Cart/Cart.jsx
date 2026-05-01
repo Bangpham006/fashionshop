@@ -104,19 +104,17 @@ const Cart = () => {
                 <h2 className="summary-title">Summary</h2>
                 <div className="summary-row">
                     <span>Subtotal</span>
-                    {/* SỬA LỖI NaN ở phần Summary */}
                     <span>{new Intl.NumberFormat('vi-VN').format(cart.totalPrice || 0)} ₫</span>
                 </div>
                 <div className="summary-row">
                     <span>Estimated Shipping & Handling</span>
-                    <span>30000 ₫</span>
+                    <span>30.000 ₫</span>
                 </div>
                 <div className="summary-total">
                     <span>Total</span>
                     <span>{new Intl.NumberFormat('vi-VN').format((cart.totalPrice || 0) + 30000)} ₫</span>
                 </div>
 
-                {/* NÚT CHUYỂN SANG CHECKOUT */}
                 <button className="checkout-button" onClick={handleCheckout}>
                     Checkout
                 </button>

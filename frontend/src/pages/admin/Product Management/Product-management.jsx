@@ -10,6 +10,7 @@ const ProductManagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [Saving, setSaving] = useState(false)
 
     const [formData, setFormData] = useState({
         name: '',
@@ -33,20 +34,22 @@ const ProductManagement = () => {
 
     const fetchInitialData = async () => {
         try {
+            setSaving(true);
             const [prodRes, catRes] = await Promise.all([
                 axios.get('http://localhost:8080/api/products/filter?size=100'),
                 axios.get('http://localhost:8080/api/categories')
             ]);
             setProducts(prodRes.data.content);
             setCategories(catRes.data);
+            setSaving(false);
         } catch (error) {
             console.error("Fetch error:", error);
+            setSaving(false);
         } finally {
             setLoading(false);
         }
     };
 
-    // --- XỬ LÝ ẢNH BASE64 ---
     const handleImageUpload = (e, target = 'product', variantIndex = null) => {
         const files = Array.from(e.target.files);
         files.forEach(file => {
@@ -69,7 +72,6 @@ const ProductManagement = () => {
         setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
     };
 
-    // --- QUẢN LÝ MODAL & BIẾN THỂ ---
     const handleOpenModal = async (product = null) => {
         if (product) {
             setEditingProduct(product);
@@ -98,6 +100,21 @@ const ProductManagement = () => {
         setIsModalOpen(true);
     };
 
+    const removeProduct = async (product) => {
+        if (window.confirm("Are you sure you want to delete this product?")) {
+            try {
+                await axios.delete(`http://localhost:8080/api/products/${product.productId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                alert("Product deleted successfully!");
+                await fetchInitialData();
+            } catch (err) {
+                alert("Forbidden: You don't have permission to delete.");
+                console.error("Delete error:", err);
+            }
+        }
+    }
+
     const addNewVariantRow = () => {
         setVariants([...variants, {
             size: '',
@@ -117,57 +134,66 @@ const ProductManagement = () => {
 
     const removeVariant = async (index) => {
         const v = variants[index];
+        const config = { headers: { 'Authorization': `Bearer ${token}` } };
+
         if (v.id && window.confirm("Are you sure you want to delete this variant?")) {
-            await axios.delete(`http://localhost:8080/api/variants/${v.id}`);
+            try {
+                await axios.delete(`http://localhost:8080/api/variants/${v.id}`, config);
+                setVariants(variants.filter((_, i) => i !== index));
+            } catch (error) {
+                alert("Could not delete variant. Error 403.");
+            }
+        } else if (!v.id) {
+            setVariants(variants.filter((_, i) => i !== index));
         }
-        setVariants(variants.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
         try {
             let currentProductId;
             if (editingProduct) {
-                await axios.put(`http://localhost:8080/api/products/${editingProduct.productId}`, formData);
+                await axios.put(`http://localhost:8080/api/products/${editingProduct.productId}`, formData, config);
                 currentProductId = editingProduct.productId;
             } else {
-                const res = await axios.post('http://localhost:8080/api/products', formData);
+                const res = await axios.post('http://localhost:8080/api/products', formData, config);
                 currentProductId = res.data.productId;
             }
 
             const variantPromises = variants.map(v => {
-                // 1. Tạo payload sạch, ép kiểu dữ liệu
                 const payload = {
                     ...v,
                     productId: currentProductId,
-                    price: v.price ? parseFloat(v.price) : formData.basePrice, // Fallback về basePrice nếu để trống
+                    price: v.price ? parseFloat(v.price) : formData.basePrice,
                     stock: v.stock ? parseInt(v.stock, 10) : 0,
-                    // Đảm bảo không gửi chuỗi rỗng cho các trường ID nếu là tạo mới
                     id: v.id || null
                 };
 
-                // 2. Kiểm tra logic POST hay PUT dựa trên sự tồn tại thực sự của ID
                 if (v.id && v.id !== "") {
-                    return axios.put(`http://localhost:8080/api/variants/${v.id}`, payload);
+                    return axios.put(`http://localhost:8080/api/variants/${v.id}`, payload, config);
                 } else {
-                    // Khi POST (tạo mới), ta nên xóa trường id khỏi payload để tránh lỗi Backend Mapping
                     const { id, ...newVariantPayload } = payload;
-                    return axios.post(`http://localhost:8080/api/variants`, newVariantPayload, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    return axios.post(`http://localhost:8080/api/variants`, newVariantPayload, config);
                 }
             });
 
             await Promise.all(variantPromises);
             setIsModalOpen(false);
-            fetchInitialData();
             alert("Save successfully!");
-        } catch (error) { alert("There was an error while saving the product."); }
+            await fetchInitialData();
+        } catch (error) {
+            console.error("Save error:", error.response);
+            alert("Error occurred while saving.");
+        }
     };
 
-    if (loading) return <LoadingCircles />;
+    if (Saving) return <LoadingCircles />;
 
     return (
         <div className="admin-page">
@@ -195,8 +221,16 @@ const ProductManagement = () => {
                                 <td>{new Intl.NumberFormat('vi-VN').format(p.basePrice)}đ</td>
                                 <td>{categories.find(c => c.id === p.categoryId)?.name || 'N/A'}</td>
                                 <td className="actions">
-                                    <button className="edit-icon" onClick={() => handleOpenModal(p)}><Edit size={18} /></button>
-                                    <button className="delete-icon" onClick={async () => { if (window.confirm("Are you sure you want to delete this product?")) { await axios.delete(`http://localhost:8080/api/products/${p.productId}`); fetchInitialData(); } }}><Trash2 size={18} /></button>
+                                    <button
+                                        className="edit-icon"
+                                        onClick={() => handleOpenModal(p)}>
+                                        <Edit size={18} />
+                                    </button>
+                                    <button
+                                        className="delete-icon"
+                                        onClick={() => removeProduct(p)}>
+                                        <Trash2 size={18} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -228,7 +262,6 @@ const ProductManagement = () => {
                                 </div>
                             </div>
 
-                            {/* UPLOAD ẢNH PRODUCT */}
                             <div className="form-group">
                                 <label>Product Images</label>
                                 <div className="upload-box">
@@ -263,7 +296,6 @@ const ProductManagement = () => {
                                 </div>
                             </div>
 
-                            {/* BẢNG BIẾN THỂ */}
                             <div className="variants-section">
                                 <h3>Product Variants</h3>
                                 <table className="variant-form-table">
@@ -302,10 +334,19 @@ const ProductManagement = () => {
 
                             <div className="checkbox-wrapper">
                                 <label htmlFor="feat">Featured Product</label>
-                                <input type="checkbox" id="feat" checked={formData.isFeatured} onChange={e => setFormData({ ...formData, isFeatured: e.target.checked })} />
+                                <input
+                                    type="checkbox"
+                                    id="feat"
+                                    checked={formData.isFeatured}
+                                    onChange={e => setFormData({ ...formData, isFeatured: e.target.checked })}
+                                />
                             </div>
 
-                            <button type="submit" className="save-button"><Save size={18} /> Save All Changes</button>
+                            <button
+                                type="submit"
+                                className="save-button">
+                                <Save size={18} /> Save All Changes
+                            </button>
                         </form>
                     </div>
                 </div>

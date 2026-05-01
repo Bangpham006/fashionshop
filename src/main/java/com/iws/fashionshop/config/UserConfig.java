@@ -24,12 +24,10 @@ public class UserConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // --- THÊM ĐOẠN NÀY ĐỂ FIX LỖI 415 ---
     @Bean
     public StandardServletMultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
-    // ------------------------------------
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -48,12 +46,14 @@ public class UserConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/products/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/variants/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
-                .anyRequest().permitAll()
+                .requestMatchers("/api/variants/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/variants/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/variants/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/variants/**").hasRole("ADMIN")
+                .requestMatchers("/api/products/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -26,14 +26,12 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // --- API CHO NGƯỜI DÙNG ---
-
     @GetMapping("/filter")
     public ResponseEntity<Page<Product>> getFilteredProducts(
             @RequestParam(required = false) String categoryId,
             @RequestParam(required = false) String gender,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(defaultValue = "9") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
         return ResponseEntity.ok(productService.getFilteredProducts(categoryId, gender, page, size, sortBy, sortDir));
@@ -59,12 +57,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductBySlug(slug));
     }
 
-    // --- API CHO QUẢN TRỊ (BẢN ĐƠN GIẢN HÓA DÙNG JSON) ---
-
-    // Tạo sản phẩm mới (Nhận JSON chứa danh sách ảnh dạng Base64)
     @PostMapping("")
     public ResponseEntity<Product> create(@RequestBody Product product) {
-        // Cách này nhận JSON thuần
         Product savedProduct = productService.createProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }

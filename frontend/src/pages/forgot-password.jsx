@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Thêm Link vào đây
-
-/**
- * FILE FORGOT PASSWORD ĐÃ SỬA:
- * 1. Dùng <Link> để chuyển về trang Register không bị load lại trang.
- * 2. Đồng bộ giao diện (style) với file Login cho đẹp.
- * 3. Chỉnh lại navigate về đúng route /auth/login sau khi đổi pass thành công.
- */
+import { Link } from 'react-router-dom';
 
 function ForgotPassword() {
     const [username, setUsername] = useState('');
@@ -28,7 +21,6 @@ function ForgotPassword() {
         }
 
         try {
-            // Đảm bảo API backend của bạn đúng cổng 8080
             await axios.post('http://localhost:8080/api/auth/forgot-password', {
                 username,
                 email,
@@ -39,7 +31,7 @@ function ForgotPassword() {
             setErrorColor('green');
 
             setTimeout(() => {
-                window.location.href = '/auth/login'; // Phải khớp với route trong App.js
+                window.location.href = '/auth/login';
             }, 1000);
         } catch (error) {
             setError('Failed to change password. Please check your username and email.');
@@ -68,7 +60,7 @@ function ForgotPassword() {
 
                 <div style={styles.inputGroup}>
                     <input
-                        type="email" // Chuyển sang type email để validate tốt hơn
+                        type="email"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -138,7 +130,7 @@ const styles = {
         outline: 'none'
     },
     button: {
-        width: '70%', // Cho rộng ra tí vì chữ "Change Password" hơi dài
+        width: '70%',
         padding: '12px',
         backgroundColor: '#000000',
         color: '#fff',

@@ -20,15 +20,13 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User registerUser(User user) {
-        // Cảnh báo tên đã tồn tại khi đăng ký
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Tên đăng nhập đã tồn tại!");
         }
 
-        // Mã hóa mật khẩu
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        String roles = "ROLE_USER"; // Mặc định mọi user đều có quyền User
+        String roles = "ROLE_USER";
         if (user.isAdmin()) {
             roles = "ROLE_ADMIN";
         }
@@ -42,16 +40,12 @@ public class UserService {
     }
 
     public User login(String username, String rawPassword) {
-        // 1. Tìm user trong DB (không phân biệt hoa thường)
         User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RuntimeException("Tên đăng nhập không tồn tại!"));
 
-        // 2. Kiểm tra mật khẩu
-        // Lưu ý: Không dùng password.equals() vì một bên là chữ thường, một bên đã mã hóa
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
-
         return user;
     }
 

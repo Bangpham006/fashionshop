@@ -16,11 +16,9 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file) throws IOException {
-        // Upload file lên folder "fashionshop/products" trên Cloudinary
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap("folder", "fashionshop/products"));
 
-        // Trả về URL của ảnh sau khi upload thành công
         return uploadResult.get("url").toString();
     }
 }

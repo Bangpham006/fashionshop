@@ -6,10 +6,7 @@ function Home() {
   return (
     <div className="home-page">
       <Hero />
-
       <Featured />
-
-
     </div>
   );
 }

@@ -143,22 +143,18 @@
     .cart-container {
         margin: 20px 0;
         width: 100%;
-
-        /* Dùng padding thay vì margin để tạo khoảng cách với mép màn hình */
         padding: 0 20px;
 
         display: flex;
         flex-direction: column;
         gap: 20px;
         box-sizing: border-box;
-        /* Đảm bảo padding không làm tăng width */
     }
 
     .cart-left,
     .cart-right {
         width: 100%;
         flex: none;
-        /* Reset flex để chiếm full width */
     }
 
     .cart-item {
@@ -166,17 +162,14 @@
         padding: 20px 0;
     }
 
-    /* Đảm bảo ảnh không bị bóp méo */
     .item-image img {
         width: 100px !important;
-        /* Buộc dùng size nhỏ trên mobile */
         height: 100px !important;
         border-radius: 4px;
     }
 
     .item-header {
         flex-direction: column;
-        /* Tên sp trên, giá dưới */
         align-items: flex-start;
         gap: 5px;
     }
@@ -193,10 +186,8 @@
 
     .item-info {
         font-size: 13px;
-        /* Đừng để 10px vì sẽ quá nhỏ khó đọc */
     }
 
-    /* Sửa lỗi nút Remove/Action Button */
     .action-button {
         margin-top: 15px;
         padding: 8px 0;
@@ -204,7 +195,6 @@
         font-size: 13px;
     }
 
-    /* Phần Summary */
     .cart-right {
         width: 100%;
         flex: none;

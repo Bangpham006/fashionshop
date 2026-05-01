@@ -7,15 +7,14 @@ import './Search-result.css';
 const SearchResult = () => {
     const [searchParams] = useSearchParams();
     const query = searchParams.get('q');
-    
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // --- STATE PHÂN TRANG ---
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
-    const pageSize = 8; // Đặt là 8 để đồng bộ với Category
+    const pageSize = 9;
 
     useEffect(() => {
         const fetchSearchResults = async () => {
@@ -25,8 +24,8 @@ const SearchResult = () => {
                 const response = await axios.get(`http://localhost:8080/api/products/search`, {
                     params: {
                         keyword: query,
-                        page: currentPage, // Truyền trang hiện tại
-                        size: pageSize     // Số lượng 8
+                        page: currentPage,
+                        size: pageSize
                     }
                 });
 
@@ -44,7 +43,7 @@ const SearchResult = () => {
         };
 
         fetchSearchResults();
-    }, [query, currentPage]); 
+    }, [query, currentPage]);
 
     useEffect(() => {
         setCurrentPage(0);
@@ -83,14 +82,14 @@ const SearchResult = () => {
                         </Link>
                     ))
                 ) : (
-                    <p className="no-products">Không tìm thấy sản phẩm nào khớp với từ khóa!</p>
+                    <p className="no-products">No product found!</p>
                 )}
             </div>
 
             {totalPages > 1 && (
                 <div className="pagination">
-                    <button 
-                        className="pagi-btn"
+                    <button
+                        className="pagination-button"
                         disabled={currentPage === 0}
                         onClick={() => setCurrentPage(prev => prev - 1)}
                     >
@@ -109,8 +108,8 @@ const SearchResult = () => {
                         ))}
                     </div>
 
-                    <button 
-                        className="pagi-btn"
+                    <button
+                        className="pagination-button"
                         disabled={currentPage === totalPages - 1}
                         onClick={() => setCurrentPage(prev => prev + 1)}
                     >

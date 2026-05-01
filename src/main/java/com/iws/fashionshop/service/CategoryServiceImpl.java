@@ -30,7 +30,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category createCategory(Category category) {
-        // Logic: Nếu slug trống, bạn có thể tự tạo từ name (dùng thư viện Slugify hoặc Regex)
         if (categoryRepository.existsBySlug(category.getSlug())) {
             throw new RuntimeException("Đường dẫn (Slug) này đã tồn tại!");
         }
@@ -52,7 +51,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(String id) {
-        // Check xem có danh mục con không trước khi xóa
         if (!categoryRepository.findByParentId(id).isEmpty()) {
             throw new RuntimeException("Không thể xóa danh mục này vì vẫn còn danh mục con!");
         }

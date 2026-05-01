@@ -7,6 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface CartRepository extends MongoRepository<Cart, String> {
-    // Tìm giỏ hàng của một người dùng cụ thể
+
     Optional<Cart> findByUserId(String userId);
 }
