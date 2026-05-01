@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { useNavigate } from 'react-router-dom';
 
-// Import ảnh từ thư mục của bạn
 import lifestyleImg from '../../image/lifestyle.jpg';
 import sportImg from '../../image/sport.jpg';
 
@@ -53,7 +52,7 @@ const Hero = () => {
                 <p className="hero-sub-title">{item.subTitle}</p>
                 <h1 className="hero-main-title">{item.title}</h1>
                 <button
-                  className="hero-btn-black"
+                  className="hero-button-black"
                   onClick={() => navigate(`/products?type=${item.type}`)}
                 >
                   Shop Now

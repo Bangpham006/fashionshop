@@ -57,12 +57,14 @@
     margin-bottom: 4px;
 }
 
-.product-category, .product-price {
+.product-category,
+.product-price {
     font-size: 15px;
     margin-bottom: 2px;
     color: #111;
     font-weight: 500;
 }
+
 .pagination {
     display: flex;
     justify-content: center;
@@ -72,7 +74,7 @@
     gap: 10px;
 }
 
-.pagi-btn {
+.pagination-button {
     padding: 10px 20px;
     border: 1px solid #e5e5e5;
     background-color: white;
@@ -82,12 +84,12 @@
     transition: all 0.2s ease;
 }
 
-.pagi-btn:hover:not(:disabled) {
+.pagination-button:hover:not(:disabled) {
     background-color: #f5f5f5;
     border-color: #111;
 }
 
-.pagi-btn:disabled {
+.pagination-button:disabled {
     color: #ccc;
     cursor: not-allowed;
 }
@@ -116,14 +118,13 @@
     background-color: #f5f5f5;
 }
 
-/* --- RESPONSIVE CHO MOBILE --- */
 @media (max-width: 768px) {
     .category-page {
         padding: 20px 16px;
     }
 
     .product-grid {
-        grid-template-columns: repeat(2, 1fr); /* Hiển thị 2 cột trên mobile */
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
@@ -132,7 +133,6 @@
     }
 }
 
-/* --- SORT COMPONENT (NIKE STYLE) --- */
 .sort-wrapper {
     position: relative;
     cursor: pointer;
@@ -167,7 +167,7 @@
     background-color: #fff;
     padding: 15px 0;
     min-width: 200px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border-radius: 20px;
     overflow: hidden;
     margin-top: 10px;
@@ -181,6 +181,7 @@
         opacity: 0;
         transform: translateY(-5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

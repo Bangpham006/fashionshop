@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.iws.fashionshop.model.Product;
 import com.iws.fashionshop.repository.ProductRepository;
@@ -18,8 +19,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
-
-    // --- PHẦN ADMIN QUẢN LÝ ---
 
     @Override
     public Product createProduct(Product product) {
@@ -36,8 +35,8 @@ public class ProductServiceImpl implements ProductService {
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
-        if (!existingProduct.getSlug().equals(productRequest.getSlug()) &&
-                productRepository.existsBySlug(productRequest.getSlug())) {
+        if (!existingProduct.getSlug().equals(productRequest.getSlug())
+                && productRepository.existsBySlug(productRequest.getSlug())) {
             throw new RuntimeException("Slug mới bị trùng!");
         }
 
@@ -57,14 +56,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(String id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
-        product.setActive(false); // Xóa mềm
-        productRepository.save(product);
+        if (!productRepository.existsById(id)) {
+            throw new RuntimeException("Sản phẩm không tồn tại");
+        }
+        productRepository.deleteById(id);
     }
-
-    // --- PHẦN HIỂN THỊ CHO USER ---
 
     @Override
     public Product getProductById(String id) {
@@ -77,35 +75,25 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại!"));
     }
 
-
     @Override
     public Page<Product> getFilteredProducts(String categoryId, String gender, int page, int size, String sortBy, String sortDir) {
-
-        // 1. Thiết lập Sắp xếp động (Ví dụ: basePrice, asc/desc)
         Sort sort = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // 2. Logic lọc phân cấp (Ưu tiên từ chi tiết đến tổng quát)
-
-        // Trường hợp lọc cả 2: Ví dụ: Men + Shoes
         if (categoryId != null && !categoryId.isEmpty() && gender != null && !gender.isEmpty()) {
             return productRepository.findByCategoryIdAndGenderAndIsActiveTrue(categoryId, gender, pageable);
         }
 
-        // Trường hợp chỉ lọc Giới tính: Ví dụ: Click vào menu "Men"
         if (gender != null && !gender.isEmpty()) {
             return productRepository.findByGenderAndIsActiveTrue(gender, pageable);
         }
 
-        // Trường hợp chỉ lọc Danh mục: Ví dụ: Click vào "Giày" (chung cho cả nam/nữ)
         if (categoryId != null && !categoryId.isEmpty()) {
             return productRepository.findByCategoryIdAndIsActiveTrue(categoryId, pageable);
         }
-
-        // Mặc định: Trả về tất cả sản phẩm đang hoạt động
         return productRepository.findAll(pageable);
     }
 

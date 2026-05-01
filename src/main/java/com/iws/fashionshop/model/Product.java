@@ -24,12 +24,12 @@ public class Product {
 
     @Id
     private String productId;
-    @Indexed // Index để tìm kiếm tên nhanh hơn
+    @Indexed
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;
 
     @Indexed(unique = true)
-    private String slug; // Dùng cho đường dẫn URL đẹp (SEO)
+    private String slug;
 
     private String description;
 
@@ -40,25 +40,18 @@ public class Product {
     private List<String> images;
 
     @Pattern(regexp = "Male|Female|Unisex")
-    private String gender; // Chỉ có thể chọn "Male", "Female" và "Unisex", dùng để sau này làm filter
+    private String gender;
 
     @Pattern(regexp = "Clothe|Shoes|Backpack|Other")
-    private String type; // Chỉ có thể chọn "CLothe", "Shoe", "Backpack" và "Other", dùng để sau này làm filter
+    private String type;
 
     @Min(value = 0)
-    private Double basePrice; // Giá hiển thị "chỉ từ..." ngoài trang chủ
-
-    // RATING
-    @Builder.Default
-    private Double averageRating = 0.0;
-    // CHO PHAN REVIEW
-    @Builder.Default
-    private Integer totalReviews = 0;
+    private Double basePrice;
 
     @Builder.Default
     private boolean isActive = true;
     @Builder.Default
-    private boolean isFeatured = false; // Đánh dấu sản phẩm hot/nổi bật // hien len home
+    private boolean isFeatured = false;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

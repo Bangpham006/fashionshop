@@ -18,11 +18,10 @@ import Footer from './components/Footer/Footer';
 
 const NavbarWrapper = () => {
   const location = useLocation();
-  // Kiểm tra xem trang hiện tại có phải là Login hoặc Register không
+
   const isAuthPage = location.pathname.startsWith('/auth');
   return (
     <>
-      {/* Chỉ hiện Navbar nếu KHÔNG phải trang Auth */}
       {!isAuthPage && <Navbar />}
     </>
   );
@@ -50,7 +49,7 @@ function App() {
 
       <div className="content-container">
         <Routes>
-          {/* Trang công khai */}
+          {/* public routes */}
           <Route path="/" element={<Home />} />
 
           <Route path="/search" element={<SearchResult />} />
@@ -63,7 +62,8 @@ function App() {
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/cart" element={<Cart />} />
-          {/* Trang chỉ cho Admin */}
+
+          {/* Admin only routes */}
           <Route
             path="/admin/revenue-overview"
             element={
@@ -82,7 +82,7 @@ function App() {
             }
           />
 
-          {/* Trang lỗi 404 */}
+          {/* Error Routes */}
           <Route path="*" element={<h2 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Không tìm thấy trang</h2>} />
         </Routes>
       </div>

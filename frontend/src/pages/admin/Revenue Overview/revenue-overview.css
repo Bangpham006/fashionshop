@@ -19,13 +19,6 @@
     margin-bottom: 40px;
 }
 
-.revenue-title {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin: 0;
-}
-
 .revenue-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

@@ -14,18 +14,16 @@ const Category = () => {
     const [loading, setLoading] = useState(true);
     const [categoryName, setCategoryName] = useState('');
 
-    // --- CÁC STATE MỚI ĐỂ PHÂN TRANG ---
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
 
-    // State cho sắp xếp
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortDir, setSortDir] = useState('desc');
     const [isSortOpen, setIsSortOpen] = useState(false);
-    const sortRef = useRef(null); // Ref để theo dõi vùng menu sort
+    const sortRef = useRef(null);
 
-    const pageSize = 8; // Số lượng sản phẩm mỗi trang
+    const pageSize = 9;
 
     const sortOptions = [
         { label: 'Newest', value: 'createdAt,desc' },
@@ -34,7 +32,6 @@ const Category = () => {
         { label: 'Name: A - Z', value: 'name,asc' },
     ];
 
-    // Xử lý click ra ngoài để đóng menu
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (sortRef.current && !sortRef.current.contains(event.target)) {
@@ -52,48 +49,42 @@ const Category = () => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                // 1. Lấy Category ID từ slug
                 const catRes = await axios.get(`http://localhost:8080/api/categories/slug/${slug}`);
                 const categoryId = catRes.data.id || catRes.data._id;
                 setCategoryName(catRes.data.name);
 
-                // 2. Gọi API filter với tham số phân trang
                 const prodRes = await axios.get('http://localhost:8080/api/products/filter', {
                     params: {
                         categoryId: categoryId,
                         gender: gender,
-                        page: currentPage, // Trang hiện tại (bắt đầu từ 0)
-                        size: pageSize,    // Số lượng 8
+                        page: currentPage,
+                        size: pageSize,
                         sortBy: sortBy,
                         sortDir: sortDir
                     }
                 });
 
-                // Dữ liệu từ Page<Product> của Spring Boot nằm trong .content
                 setProducts(prodRes.data.content);
                 setTotalPages(prodRes.data.totalPages);
                 setTotalProducts(prodRes.data.totalElements);
             } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
+                console.error("Error:", error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, [slug, gender, currentPage, sortBy, sortDir]); // Chạy lại khi đổi trang hoặc tiêu chí sort
-
-    // Reset về trang đầu tiên khi người dùng đổi danh mục hoặc giới tính
+    }, [slug, gender, currentPage, sortBy, sortDir]);
     useEffect(() => {
         setCurrentPage(0);
     }, [slug, gender]);
 
-    // Hàm xử lý khi thay đổi kiểu sắp xếp
     const handleSortSelect = (value) => {
         const [field, direction] = value.split(',');
         setSortBy(field);
         setSortDir(direction);
-        setCurrentPage(0); // Quay về trang 1
+        setCurrentPage(0);
         setIsSortOpen(false);
     };
 
@@ -104,22 +95,22 @@ const Category = () => {
     return (
         <div className="category-page">
             <header className="category-header" style={styles.header}>
-                <h1 style={styles.title}>{gender ? `${gender}'s ${categoryName}` : categoryName}</h1>
+                <h1 style={styles.title}>{gender ? ` ${categoryName}` : categoryName}</h1>
                 <div className="category-controls" style={styles.controls}>
                     <span className="product-count" style={styles.count}>{totalProducts} Products</span>
                     <div className="sort-wrapper" ref={sortRef}>
                         <div className="sort-trigger" onClick={() => setIsSortOpen(!isSortOpen)}>
                             <span>Sort By</span>
-                            <ChevronDown 
-                                size={18} 
-                                className={`chevron-icon ${isSortOpen ? 'rotate' : ''}`} 
+                            <ChevronDown
+                                size={18}
+                                className={`chevron-icon ${isSortOpen ? 'rotate' : ''}`}
                             />
                         </div>
-                        
+
                         {isSortOpen && (
                             <div className="sort-dropdown">
                                 {sortOptions.map((option) => (
-                                    <div 
+                                    <div
                                         key={option.value}
                                         className={`sort-item ${(`${sortBy},${sortDir}` === option.value) ? 'active' : ''}`}
                                         onClick={() => handleSortSelect(option.value)}
@@ -154,12 +145,11 @@ const Category = () => {
                 )}
             </div>
 
-            {/* --- BỘ NÚT PHÂN TRANG --- */}
             {totalPages > 1 && (
                 <div className="pagination">
-                    <button 
-                        className="pagi-btn"
-                        disabled={currentPage === 0} 
+                    <button
+                        className="pagination-button"
+                        disabled={currentPage === 0}
                         onClick={() => setCurrentPage(prev => prev - 1)}
                     >
                         Previous
@@ -177,9 +167,9 @@ const Category = () => {
                         ))}
                     </div>
 
-                    <button 
-                        className="pagi-btn"
-                        disabled={currentPage === totalPages - 1} 
+                    <button
+                        className="pagination-button"
+                        disabled={currentPage === totalPages - 1}
                         onClick={() => setCurrentPage(prev => prev + 1)}
                     >
                         Next
@@ -202,7 +192,7 @@ const styles = {
         gap: '15px'
     },
     title: {
-        fontSize: 'calc(18px + 1vw)', // Kích thước chữ co giãn theo màn hình
+        fontSize: 'calc(18px + 1vw)',
         fontWeight: '700',
         margin: 0,
         textTransform: 'uppercase',

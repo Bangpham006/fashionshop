@@ -11,12 +11,10 @@ import org.bson.types.ObjectId;
 
 @Repository
 public interface ProductVariantRepository extends MongoRepository<ProductVariant, String> {
-    // Lấy tất cả Size/Màu của 1 đôi giày cụ thể
+
     List<ProductVariant> findByProductId(ObjectId productId);
 
-    // Tìm chính xác bằng mã SKU (Mã vạch/Mã định danh vật lý)
     Optional<ProductVariant> findBySku(String sku);
 
-    // Tìm các biến thể sắp hết hàng (Ví dụ: stock < 5) để báo Admin nhập thêm
     List<ProductVariant> findByStockLessThan(Integer threshold);
 }

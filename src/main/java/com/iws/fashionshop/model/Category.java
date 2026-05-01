@@ -13,27 +13,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Document(collection = "categories")
 public class Category {
+
     @Id
     private String id;
 
     @Indexed(unique = true)
-    private String name; // Ví dụ: Giày Chạy Bộ
+    private String name;
 
     @Indexed(unique = true)
-    private String slug; // Ví dụ: giay-chay-bo (Dùng cho URL)
+    private String slug;
 
     private String description;
 
-    private String parentId; // ID của danh mục cha (Men > Shoes)
+    private String parentId;
 
-    private Integer level; // 1: Gốc san pham , 2: Con shoes / clothes, 3:
+    private Integer level;
 
-    private String path; // Lưu dạng: /men/shoes để tìm kiếm phân cấp nhanh
+    private String path;
 
-    private Integer displayOrder = 0; // Thứ tự hiển thị trên Menu
+    private Integer displayOrder = 0;
 
-    private Boolean active = true ;
-    // cho sort theo tgian spham
+    private Boolean active = true;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

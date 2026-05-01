@@ -3,14 +3,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
-    // 1. CHUYỂN SANG DÙNG STATE ĐỂ LƯU GIỎ HÀNG THẬT
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const userId = localStorage.getItem("userId");
     const shippingFee = 30000;
 
-    // 2. GỌI API LẤY GIỎ HÀNG KHI VÀO TRANG
     useEffect(() => {
         const fetchCartData = async () => {
             if (!userId) {
@@ -18,11 +16,10 @@ const Checkout = () => {
                 return;
             }
             try {
-                // Lấy toàn bộ giỏ hàng dựa trên userId
                 const response = await axios.get(`http://localhost:8080/api/cart/user/${userId}`);
                 setCart(response.data);
             } catch (error) {
-                console.error("Lỗi lấy dữ liệu checkout:", error);
+                console.error("Error:", error);
             } finally {
                 setLoading(false);
             }
@@ -32,13 +29,11 @@ const Checkout = () => {
 
     function handlePayNowButton() {
         alert("Your order has been placed successfully! Thank you for shopping with us.");
-        // Sau khi thanh toán, bạn có thể gọi thêm API clear giỏ hàng ở đây
         navigate('/');
     }
 
     if (loading) return <div style={styles.checkoutWrapper}>Loading order...</div>;
-    
-    // Nếu không có giỏ hàng hoặc giỏ hàng trống
+
     if (!cart || !cart.items || cart.items.length === 0) {
         return (
             <div style={styles.checkoutWrapper}>
@@ -48,20 +43,17 @@ const Checkout = () => {
         );
     }
 
-    // Tính toán dựa trên dữ liệu thật từ Backend
     const subtotal = cart.totalPrice || 0;
     const total = subtotal + shippingFee;
 
     return (
         <div style={styles.checkoutWrapper}>
             <div style={styles.singleColumnContainer}>
-
-                {/* 1. Review Order - SỬA LẠI ĐỂ HIỂN THỊ DANH SÁCH SẢN PHẨM */}
                 <section style={styles.section}>
                     <h2 style={styles.heading}>Review Your Order</h2>
 
                     {cart.items.map((item, index) => (
-                        <div key={item.variantId || index} style={{...styles.productCard, marginBottom: '20px'}}>
+                        <div key={item.variantId || index} style={{ ...styles.productCard, marginBottom: '20px' }}>
                             <img src={item.image} alt="product" style={styles.productImg} />
                             <div style={styles.productDetails}>
                                 <p style={{ fontWeight: '600', marginBottom: '4px', fontSize: '16px' }}>{item.productName}</p>
@@ -77,7 +69,6 @@ const Checkout = () => {
 
                 <hr style={styles.divider} />
 
-                {/* 2. Delivery Info (Giữ nguyên) */}
                 <section style={styles.section}>
                     <h2 style={styles.heading}>Delivery Options</h2>
                     <div style={styles.inputGroup}>
@@ -97,7 +88,6 @@ const Checkout = () => {
 
                 <hr style={styles.divider} />
 
-                {/* 3. Order Summary - DÙNG DỮ LIỆU THẬT */}
                 <section style={styles.section}>
                     <h2 style={styles.heading}>Summary</h2>
 
@@ -119,7 +109,6 @@ const Checkout = () => {
 
                 <hr style={styles.divider} />
 
-                {/* 4. Payment & Pay Now (Giữ nguyên) */}
                 <section style={styles.section}>
                     <h2 style={styles.heading}>Payment</h2>
                     <div style={styles.row}>
@@ -143,21 +132,95 @@ const Checkout = () => {
 };
 
 const styles = {
-    checkoutWrapper: { backgroundColor: '#fff', minHeight: '100vh', padding: '40px 20px', display: 'flex', justifyContent: 'center' },
-    singleColumnContainer: { width: '100%', maxWidth: '600px' },
-    section: { padding: '10px 0' },
-    heading: { fontSize: '20px', fontWeight: '600', marginBottom: '20px', letterSpacing: '-0.5px' },
-    divider: { border: 'none', borderTop: '1px solid #f5f5f5', margin: '10px 0' },
-    productCard: { display: 'flex', gap: '20px', alignItems: 'flex-start' },
-    productImg: { width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px', backgroundColor: '#f6f6f6' },
-    productDetails: { flex: 1 },
-    grayText: { color: '#707072', fontSize: '14px' },
-    summaryRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '16px' },
-    paymentButton: { flex: 1, width: '100%', padding: '10px', backgroundColor: '#ffffff', color: '#000000', border: '1px solid #000000', fontSize: '16px', cursor: 'pointer' },
-    inputGroup: { marginBottom: '20px' },
-    row: { display: 'flex', gap: '15px', marginBottom: '20px' },
-    input: { width: '100%', padding: '16px', fontSize: '16px', border: '1px solid #e5e5e5', borderRadius: '8px', outline: 'none', transition: 'border-color 0.2s' },
-    payNowButton: { flex: 1, width: '100%', padding: '16px', backgroundColor: '#000', color: '#fff', border: 'none', borderRadius: '30px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }
+    checkoutWrapper: {
+        backgroundColor: '#fff',
+        minHeight: '100vh',
+        padding: '40px 20px',
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    singleColumnContainer: {
+        width: '100%',
+        maxWidth: '600px'
+    },
+    section: {
+        padding: '10px 0'
+    },
+    heading: {
+        fontSize: '20px',
+        fontWeight: '600',
+        marginBottom: '20px',
+        letterSpacing: '-0.5px'
+    },
+    divider: {
+        border: 'none',
+        borderTop: '1px solid #f5f5f5',
+        margin: '10px 0'
+    },
+    productCard: {
+        display: 'flex',
+        gap: '20px',
+        alignItems: 'flex-start'
+    },
+    productImg: {
+        width: '100px',
+        height: '100px',
+        objectFit: 'cover',
+        borderRadius: '8px',
+        backgroundColor: '#f6f6f6'
+    },
+    productDetails: {
+        flex: 1
+    },
+    grayText: {
+        color: '#707072',
+        fontSize: '14px'
+    },
+    summaryRow: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '10px',
+        fontSize: '16px'
+    },
+    paymentButton: {
+        flex: 1,
+        width: '100%',
+        padding: '10px',
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        border: '1px solid #000000',
+        fontSize: '16px',
+        cursor: 'pointer'
+    },
+    inputGroup: {
+        marginBottom: '20px'
+    },
+    row: {
+        display: 'flex',
+        gap: '15px',
+        marginBottom: '20px'
+    },
+    input: {
+        width: '100%',
+        padding: '16px',
+        fontSize: '16px',
+        border: '1px solid #e5e5e5',
+        borderRadius: '8px',
+        outline: 'none',
+        transition: 'border-color 0.2s'
+    },
+    payNowButton: {
+        flex: 1,
+        width: '100%',
+        padding: '16px',
+        backgroundColor: '#000',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '30px',
+        fontSize: '16px',
+        fontWeight: '600',
+        cursor: 'pointer'
+    }
 };
 
 export default Checkout;

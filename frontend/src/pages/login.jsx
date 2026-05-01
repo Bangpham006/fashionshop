@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [errorColor, setErrorColor] = useState('red');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -13,44 +14,38 @@ function Login() {
         setError('');
 
         try {
-            // Đảm bảo URL này khớp với cổng Backend của bạn (thường là 8080)
             const response = await axios.post("http://localhost:8080/api/auth/login", {
                 username: username,
                 password: password
             });
 
             const data = response.data;
-            
-            // BƯỚC KIỂM TRA QUAN TRỌNG: 
-            console.log("Dữ liệu đầy đủ từ Backend trả về:", data);
 
             if (data.token) {
-                // 1. Lưu Token và thông tin cơ bản
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("username", data.username);
                 localStorage.setItem("role", data.roles || data.role);
 
-                // 2. TRUY QUÉT USER ID:
-                const userId = data.id || data._id || (data.user && (data.user.id || data.user._id)); 
-                
+                const userId = data.id || data._id || (data.user && (data.user.id || data.user._id));
+
                 if (userId) {
                     localStorage.setItem("userId", String(userId));
-                    console.log("Đã lưu userId vào máy:", userId);
-                    
-                    alert("Đăng nhập thành công! ID: " + userId);
-                } else {
-                    console.error("CẢNH BÁO: Backend không trả về bất kỳ trường ID nào!", data);
-                    alert("Lỗi: Không tìm thấy ID người dùng trong dữ liệu trả về.");
-                }
 
-                // 3. ĐIỀU HƯỚNG
-                setTimeout(() => {
-                    window.location.href = '/'; 
-                }, 200);
+                    setError('Login successful! Redirecting...');
+                    setErrorColor('green');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 500);
+                } else {
+                    console.error("Error", data);
+                    setError('Login successful but failed to retrieve user ID. Please try again.');
+                    setErrorColor('red');
+                }
             }
         } catch (err) {
             setError('Username or password is incorrect!');
-            console.error("Lỗi đăng nhập chi tiết:", err);
+            setErrorColor('red');
+            console.error("Error:", err);
         }
     };
 
@@ -59,7 +54,7 @@ function Login() {
             <form onSubmit={handleLogin} style={styles.card}>
                 <h2 style={{ textAlign: 'center', marginBottom: '25px', letterSpacing: '2px', fontWeight: '800' }}>LOGIN</h2>
 
-                {error && <p style={{ color: '#ff0000', textAlign: 'center', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
+                {error && <p style={{ color: errorColor, textAlign: 'center', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
 
                 <div style={styles.inputGroup}>
                     <input
@@ -101,45 +96,50 @@ function Login() {
 };
 
 const styles = {
-    container: { 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '90vh',
-        backgroundColor: '#f5f5f5' 
+        backgroundColor: '#f5f5f5'
     },
-    card: { 
-        padding: '50px 40px', 
-        borderRadius: '15px', 
-        width: '100%', 
-        maxWidth: '420px', 
-        boxShadow: '0 10px 30px rgba(0,0,0,0.1)', 
-        backgroundColor: '#fff' 
+    card: {
+        padding: '50px 40px',
+        borderRadius: '15px',
+        width: '100%',
+        maxWidth: '420px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+        backgroundColor: '#fff'
     },
     inputGroup: { marginBottom: '20px' },
-    input: { 
-        width: '100%', 
-        padding: '14px 20px', 
-        borderRadius: '30px', 
-        border: '1px solid #eee', 
-        boxSizing: 'border-box', 
-        outline: 'none', 
+    input: {
+        width: '100%',
+        padding: '14px 20px',
+        borderRadius: '30px',
+        border: '1px solid #eee',
+        boxSizing: 'border-box',
+        outline: 'none',
         backgroundColor: '#f9f9f9',
         fontSize: '15px'
     },
-    button: { 
-        width: '100%', 
-        padding: '14px', 
-        backgroundColor: '#000', 
-        color: '#fff', 
-        border: 'none', 
-        borderRadius: '30px', 
-        cursor: 'pointer', 
-        fontSize: '16px', 
+    button: {
+        width: '100%',
+        padding: '14px',
+        backgroundColor: '#000',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '30px',
+        cursor: 'pointer',
+        fontSize: '16px',
         fontWeight: 'bold',
         transition: '0.3s opacity'
     },
-    link: { color: '#000', fontWeight: 'bold', textDecoration: 'none', borderBottom: '1px solid #000' }
+    link: {
+        color: '#000',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        borderBottom: '1px solid #000'
+    }
 };
 
 export default Login;

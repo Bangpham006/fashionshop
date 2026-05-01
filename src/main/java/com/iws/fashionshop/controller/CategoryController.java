@@ -25,41 +25,33 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    // 1. Lấy tất cả danh mục
     @GetMapping
     public ResponseEntity<List<Category>> getAll() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
-    // 2. Tìm danh mục theo Slug (Ví dụ: /api/categories/slug/giay-nam)
     @GetMapping("/slug/{slug}")
     public ResponseEntity<Category> getBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(categoryService.getCategoryBySlug(slug));
     }
 
-    // 3. Lấy danh mục con
     @GetMapping("/parent/{parentId}")
     public ResponseEntity<List<Category>> getSubs(@PathVariable String parentId) {
         return ResponseEntity.ok(categoryService.getSubCategories(parentId));
     }
 
-    // 4. Admin tạo danh mục mới
     @PostMapping
-    //////////// cmt tam dong duoi de test va add spham  /////////////////////
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> create(@RequestBody Category category) {
         Category savedCategory = categoryService.createCategory(category);
         return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
     }
 
-    // 5. Admin cập nhật danh mục
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> update(@PathVariable String id, @RequestBody Category category) {
         return ResponseEntity.ok(categoryService.updateCategory(id, category));
     }
 
-    // 6. Admin xóa danh mục
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {

@@ -126,7 +126,7 @@ const styles = {
         outline: 'none'
     },
     button: {
-        width: '70%', // Cho rộng ra tí vì chữ "Change Password" hơi dài
+        width: '70%',
         padding: '12px',
         backgroundColor: '#000000',
         color: '#fff',

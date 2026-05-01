@@ -13,11 +13,8 @@ const ProductDetail = () => {
     const [variants, setVariants] = useState([]);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // TRẠNG THÁI HIỆN POPUP (MODAL)
     const [showModal, setShowModal] = useState(false);
 
-    // LẤY USERID TỪ LOCAL STORAGE (BƯỚC QUAN TRỌNG VỪA FIX XONG)
     const userId = localStorage.getItem("userId");
 
     useEffect(() => {
@@ -37,7 +34,7 @@ const ProductDetail = () => {
                     setVariants(sortedVariants);
                 }
             } catch (error) {
-                console.error("Lỗi khi fetch dữ liệu:", error);
+                console.error("Error:", error);
             } finally {
                 setLoading(false);
             }
@@ -58,23 +55,17 @@ const ProductDetail = () => {
         }
 
         try {
-            // GỬI USERID LÊN BACKEND THAY VÌ USERNAME
             await axios.post(`http://localhost:8080/api/cart/add`, null, {
                 params: {
-                    userId: userId, // Dùng ID vừa lấy được
+                    userId: userId,
                     variantId: selectedVariant.id || selectedVariant._id,
                     quantity: 1
                 }
             });
-
-            // HIỆN POPUP THÔNG BÁO THÀNH CÔNG
             setShowModal(true);
-
-            // Tự động đóng sau 5 giây nếu người dùng không bấm gì
             setTimeout(() => setShowModal(false), 5000);
-
         } catch (error) {
-            alert("Failed to add to cart. Please check Backend API.");
+            alert("Failed to add to cart!");
         }
     };
 
@@ -85,14 +76,13 @@ const ProductDetail = () => {
 
     return (
         <div className="pdp-container">
-            {/* --- POPUP (MODAL) GIỐNG NIKE --- */}
             {showModal && (
                 <div className="nike-modal-overlay">
                     <div className="nike-modal">
                         <div className="modal-header">
                             <span className="success-icon">✔</span>
                             <span>Added to Bag</span>
-                            <button className="close-btn" onClick={() => setShowModal(false)}>✕</button>
+                            <button className="close-button" onClick={() => setShowModal(false)}>✕</button>
                         </div>
                         <div className="modal-body">
                             <img src={product.images?.[0]} alt="" />
@@ -104,8 +94,8 @@ const ProductDetail = () => {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button className="view-bag-btn" onClick={() => navigate('/cart')}>View Bag</button>
-                            <button className="checkout-btn" onClick={() => navigate('/checkout')}>Checkout</button>
+                            <button className="view-bag-button" onClick={() => navigate('/cart')}>View Bag</button>
+                            <button className="checkout-button" onClick={() => navigate('/checkout')}>Checkout</button>
                         </div>
                     </div>
                 </div>
@@ -148,7 +138,7 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="pdp-actions">
-                    <button className="add-to-cart-btn" onClick={handleAddToCart}>
+                    <button className="add-to-cart-button" onClick={handleAddToCart}>
                         Add to Bag
                     </button>
                 </div>

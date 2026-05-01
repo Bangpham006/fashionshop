@@ -25,7 +25,6 @@ public class CartService {
     private ProductVariantRepository variantRepository;
 
     public Cart getCartByUserId(String userId) {
-        // Kiểm tra an toàn cho userId
         if (userId == null || userId.equals("undefined") || userId.isEmpty()) {
             throw new RuntimeException("User ID không hợp lệ");
         }
@@ -44,38 +43,38 @@ public class CartService {
         try {
             Cart cart = getCartByUserId(userId);
 
-            // 1. Tìm Variant
             ProductVariant variant = variantRepository.findById(variantId)
                     .orElseThrow(() -> new RuntimeException("Variant không tồn tại ID: " + variantId));
 
-            // 2. Tìm Product - Chú ý dùng getProductId().toHexString() để khớp với MongoDB ID
             String productIdStr = variant.getProductId().toHexString();
             Product product = productRepository.findById(productIdStr)
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại ID: " + productIdStr));
-
-            // Đảm bảo danh sách items không null
             if (cart.getItems() == null) {
                 cart.setItems(new ArrayList<>());
             }
 
-            // 3. Kiểm tra trùng
             Optional<Cart.CartItem> existingItem = cart.getItems().stream()
                     .filter(item -> item.getVariantId().equals(variantId))
                     .findFirst();
 
+            Double variantPrice = variant.getPrice();
+            double safePrice = 0.0;
+            if (variantPrice != null) {
+                safePrice = variantPrice;
+            }
+
             if (existingItem.isPresent()) {
                 Cart.CartItem item = existingItem.get();
                 item.setQuantity(item.getQuantity() + (quantity != null ? quantity : 1));
-                item.setPrice(variant.getPrice());
+                item.setPrice(safePrice);
             } else {
                 Cart.CartItem newItem = new Cart.CartItem();
                 newItem.setVariantId(variantId);
                 newItem.setQuantity(quantity != null ? quantity : 1);
                 newItem.setProductName(product.getName());
-                newItem.setPrice(variant.getPrice() != null ? variant.getPrice() : 0.0);
+                newItem.setPrice(safePrice);
                 newItem.setSize(variant.getSize());
 
-                // Xử lý ảnh an toàn
                 String imgUrl = "";
                 if (variant.getVariantImage() != null && !variant.getVariantImage().isEmpty()) {
                     imgUrl = variant.getVariantImage();
@@ -87,7 +86,6 @@ public class CartService {
                 cart.getItems().add(newItem);
             }
 
-            // 4. Tính toán và lưu
             updateCartTotal(cart);
             return cartRepository.save(cart);
 
@@ -105,9 +103,11 @@ public class CartService {
 
         double total = cart.getItems().stream()
                 .mapToDouble(item -> {
-                    double price = (item.getPrice() != null) ? item.getPrice() : 0.0;
-                    int qty = (item.getQuantity() != null) ? item.getQuantity() : 0;
-                    return price * qty;
+                    Double price = item.getPrice();
+                    double priceValue = (price != null) ? price : 0.0;
+                    Integer quantity = item.getQuantity();
+                    int qty = (quantity != null) ? quantity : 0;
+                    return priceValue * qty;
                 })
                 .sum();
 
