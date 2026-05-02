@@ -7,10 +7,12 @@
     padding: 0 40px;
 }
 
-.pdp-left image {
-    width: 100%;
+.pdp-left img {
+    width: 500px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     background: #f6f6f6;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .pdp-name {
@@ -67,6 +69,15 @@
     background: #f6f6f6;
     color: #ccc;
     cursor: not-allowed;
+}
+
+.color-label {
+    font-size: 10px;
+    color: #757575;
+}
+
+.size-item.active .color-label {
+    color: #fff;
 }
 
 /* ===== BUTTON ===== */
@@ -148,13 +159,6 @@
     display: flex;
     gap: 15px;
     margin-bottom: 20px;
-}
-
-.modal-body image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    background: #f5f5f5;
 }
 
 .item-info h4 {

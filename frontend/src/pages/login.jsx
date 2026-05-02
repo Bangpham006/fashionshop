@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [errorColor, setErrorColor] = useState('red');
-    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -32,7 +31,7 @@ function Login() {
                     localStorage.setItem("userId", String(userId));
 
                     setError('Login successful! Redirecting...');
-                    setErrorColor('green');
+                    setErrorColor('#4ad540');
                     setTimeout(() => {
                         window.location.href = '/';
                     }, 500);
@@ -54,7 +53,16 @@ function Login() {
             <form onSubmit={handleLogin} style={styles.card}>
                 <h2 style={{ textAlign: 'center', marginBottom: '25px', letterSpacing: '2px', fontWeight: '800' }}>LOGIN</h2>
 
-                {error && <p style={{ color: errorColor, textAlign: 'center', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
+                {error &&
+                    <p style={{
+                        color: errorColor,
+                        fontSize: '14px',
+                        marginBottom: '15px',
+                        fontWeight: 'bold'
+                    }}>
+                        {error}
+                    </p>
+                }
 
                 <div style={styles.inputGroup}>
                     <input
@@ -138,7 +146,6 @@ const styles = {
         color: '#000',
         fontWeight: 'bold',
         textDecoration: 'none',
-        borderBottom: '1px solid #000'
     }
 };
 

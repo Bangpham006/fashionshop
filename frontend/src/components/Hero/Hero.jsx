@@ -20,14 +20,14 @@ const Hero = () => {
       image: sportImg,
       subTitle: "Performance & Training",
       title: "ELITE SPORT GEAR",
-      type: "sport"
+      type: "shoes"
     },
     {
       id: 2,
       image: lifestyleImg,
       subTitle: "Classic Comfort",
       title: "MODERN ESSENTIALS",
-      type: "lifestyle"
+      type: "clothing"
     }
   ];
 
@@ -53,7 +53,7 @@ const Hero = () => {
                 <h1 className="hero-main-title">{item.title}</h1>
                 <button
                   className="hero-button-black"
-                  onClick={() => navigate(`/products?type=${item.type}`)}
+                  onClick={() => navigate(`/category/men-${item.type}?gender=Men`)}
                 >
                   Shop Now
                 </button>

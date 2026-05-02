@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LoadingCircles from '../components/Loading-circles';
 
 const Checkout = () => {
     const [cart, setCart] = useState(null);
@@ -32,13 +33,17 @@ const Checkout = () => {
         navigate('/');
     }
 
-    if (loading) return <div style={styles.checkoutWrapper}>Loading order...</div>;
+    if (loading) {
+        return (
+            <LoadingCircles />
+        );
+    }
 
     if (!cart || !cart.items || cart.items.length === 0) {
         return (
-            <div style={styles.checkoutWrapper}>
-                <h2>Your bag is empty. Please add items before checkout.</h2>
-                <button style={styles.payNowButton} onClick={() => navigate('/cart')}>Back to Bag</button>
+            <div style={styles.error}>
+                <h2>Your bag is empty. Please add an item before checkout.</h2>
+                <button style={styles.returnButton} onClick={() => navigate('/')}>Back to Home</button>
             </div>
         );
     }
@@ -219,6 +224,24 @@ const styles = {
         borderRadius: '30px',
         fontSize: '16px',
         fontWeight: '600',
+        cursor: 'pointer'
+    },
+
+    error: {
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '15px',
+        padding: '40px 20px'
+    },
+    returnButton: {
+        padding: '16px',
+        backgroundColor: '#000',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '30px',
+        fontSize: '16px',
+        fontWeight: '400',
         cursor: 'pointer'
     }
 };

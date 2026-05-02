@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { Trash2, Edit, Plus, X, Save, Upload } from 'lucide-react';
 import LoadingCircles from '../../../components/Loading-circles';
 import './Product-management.css';
 
 const ProductManagement = () => {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [categories, setCategories] = useState([]);
@@ -45,8 +45,6 @@ const ProductManagement = () => {
         } catch (error) {
             console.error("Fetch error:", error);
             setSaving(false);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -216,10 +214,22 @@ const ProductManagement = () => {
                     <tbody>
                         {products.map(p => (
                             <tr key={p.productId}>
-                                <td><img src={p.images?.[0] || 'https://via.placeholder.com/50'} className="admin-thumb" alt="" /></td>
-                                <td><div className="prod-name">{p.name}</div></td>
-                                <td>{new Intl.NumberFormat('vi-VN').format(p.basePrice)}đ</td>
-                                <td>{categories.find(c => c.id === p.categoryId)?.name || 'N/A'}</td>
+                                <td data-label="Image">
+                                    <img src={p.images?.[0] || 'https://via.placeholder.com/50'}
+                                        className="admin-thumb" alt="" />
+                                </td>
+                                <td data-label="Product Name">
+                                    <Link to={`/product/${p.slug}`} className="prod-name">
+                                        {p.name}
+                                    </Link>
+                                </td>
+                                <td data-label="Price">
+                                    {new Intl.NumberFormat('vi-VN').format(p.basePrice)}đ
+                                </td>
+                                <td data-label="Category">
+                                    {categories.find(c => c.id === p.categoryId)?.name || 'N/A'}
+                                </td>
+
                                 <td className="actions">
                                     <button
                                         className="edit-icon"
@@ -315,16 +325,65 @@ const ProductManagement = () => {
                                             <tr key={index}>
                                                 <td>
                                                     <div className="variant-img-cell">
-                                                        {v.variantImage ? <img src={v.variantImage} alt="" onClick={() => updateVariantField(index, 'variantImage', '')} />
-                                                            : <input type="file" onChange={(e) => handleImageUpload(e, 'variant', index)} />}
+                                                        {v.variantImage ?
+                                                            <img src={v.variantImage}
+                                                                alt="" onClick={() => updateVariantField(index, 'variantImage', '')}
+                                                            />
+                                                            :
+                                                            <input
+                                                                type="file"
+                                                                onChange={(e) => handleImageUpload(e, 'variant', index)}
+                                                            />}
                                                     </div>
                                                 </td>
-                                                <td><input type="text" value={v.size} onChange={e => updateVariantField(index, 'size', e.target.value)} className="small-inp" /></td>
-                                                <td><input type="text" value={v.color} onChange={e => updateVariantField(index, 'color', e.target.value)} className="small-inp" /></td>
-                                                <td><input type="number" value={v.price} onChange={e => updateVariantField(index, 'price', e.target.value)} className="small-inp" /></td>
-                                                <td><input type="number" value={v.stock} onChange={e => updateVariantField(index, 'stock', e.target.value)} className="small-inp" /></td>
-                                                <td><input type="text" value={v.sku} onChange={e => updateVariantField(index, 'sku', e.target.value)} className="small-inp" /></td>
-                                                <td><button type="button" onClick={() => removeVariant(index)} className="remove-var-button"><X size={16} /></button></td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        value={v.size}
+                                                        onChange={e => updateVariantField(index, 'size', e.target.value)}
+                                                        className="small-inp"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        value={v.color}
+                                                        onChange={e => updateVariantField(index, 'color', e.target.value)}
+                                                        className="small-inp"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        value={v.price}
+                                                        onChange={e => updateVariantField(index, 'price', e.target.value)}
+                                                        className="small-inp"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        value={v.stock}
+                                                        onChange={e => updateVariantField(index, 'stock', e.target.value)}
+                                                        className="small-inp"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        value={v.sku}
+                                                        onChange={e => updateVariantField(index, 'sku', e.target.value)}
+                                                        className="small-inp"
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeVariant(index)}
+                                                        className="remove-variant-button">
+                                                        <X size={16} />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>

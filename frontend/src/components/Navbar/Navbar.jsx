@@ -50,7 +50,7 @@ const Navbar = () => {
         </button>
 
         <div className="nav-logo" onClick={() => { navigate('/'); setIsMenuOpen(false); }}>
-          <div className="logo-square">W</div>
+          <div className="logo-square">F</div>
           <span className="brand-name">FASHIONSHOP</span>
         </div>
 
