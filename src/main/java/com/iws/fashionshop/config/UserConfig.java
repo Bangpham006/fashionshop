@@ -54,6 +54,7 @@ public class UserConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/variants/**").hasRole("ADMIN")
                 .requestMatchers("/api/products/**").hasRole("ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
