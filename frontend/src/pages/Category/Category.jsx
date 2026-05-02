@@ -141,7 +141,7 @@ const Category = () => {
                         </Link>
                     ))
                 ) : (
-                    <p className="no-products">No products found!</p>
+                    <h2 style={{ textAlign: 'center', marginTop: '50px' }}>No products found!</h2>
                 )}
             </div>
 

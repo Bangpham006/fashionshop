@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-
-import Navbar from './components/Navbar/Navbar';
+import { useEffect } from 'react';
 
 import Home from './pages/home';
 import Category from './pages/Category/Category';
@@ -13,6 +12,9 @@ import RevenueOverview from './pages/admin/Revenue Overview/revenue-overview';
 import ProductManagement from './pages/admin/Product Management/Product-management';
 import SearchResult from './pages/Search Result/Search-result';
 import Cart from './pages/Cart/Cart';
+
+import Navbar from './components/Navbar/Navbar';
+import IsLogin from './components/isLogin';
 import IsAdmin from './components/isAdmin';
 import Footer from './components/Footer/Footer';
 
@@ -37,6 +39,18 @@ const FooterWrapper = () => {
   );
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTo(0, 0);
+    document.body.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 function App() {
   return (
     <Router
@@ -45,23 +59,41 @@ function App() {
         v7_relativeSplatPath: true
       }}
     >
+      <ScrollToTop />
       <NavbarWrapper />
 
       <div className="content-container">
         <Routes>
-          {/* public routes */}
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
 
           <Route path="/search" element={<SearchResult />} />
 
           <Route path="/category/:slug" element={<Category />} />
-          <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
 
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-          <Route path="/cart" element={<Cart />} />
+
+          {/* Login required routes */}
+          <Route
+            path="/cart"
+            element={
+              <IsLogin>
+                <Cart />
+              </IsLogin>
+            }
+          />
+
+          <Route
+            path="/checkout"
+            element={
+              <IsLogin>
+                <Checkout />
+              </IsLogin>
+            }
+          />
 
           {/* Admin only routes */}
           <Route
@@ -83,7 +115,9 @@ function App() {
           />
 
           {/* Error Routes */}
-          <Route path="*" element={<h2 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Không tìm thấy trang</h2>} />
+          <Route path="*" element={<h2 style={{ textAlign: 'center', marginTop: '50px' }}>404 - Page Not Found</h2>} />
+
+
         </Routes>
       </div>
 

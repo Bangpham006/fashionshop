@@ -72,7 +72,12 @@ const ProductDetail = () => {
     if (loading) {
         return <LoadingCircles />;
     }
-    if (!product) return <div className="error">Product not found.</div>;
+    if (!product) {
+        return (
+            <h2 style={{ textAlign: 'center', marginTop: '50px' }}>
+                Product not found.
+            </h2>);
+    }
 
     return (
         <div className="pdp-container">
@@ -85,7 +90,6 @@ const ProductDetail = () => {
                             <button className="close-button" onClick={() => setShowModal(false)}>✕</button>
                         </div>
                         <div className="modal-body">
-                            <img src={product.images?.[0]} alt="" />
                             <div className="item-info">
                                 <h4>{product.name}</h4>
                                 <p>Size: {selectedVariant?.size}</p>
@@ -128,7 +132,7 @@ const ProductDetail = () => {
                                     onClick={() => setSelectedVariant(v)}
                                 >
                                     {v.size}
-                                    <div className="color-label" style={{ fontSize: '10px', color: '#757575' }}>
+                                    <div className="color-label">
                                         {v.color}
                                     </div>
                                 </button>
