@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import Home from './pages/home';
 import Category from './pages/Category/Category';
-import Checkout from './pages/checkout';
+import Checkout from './pages/Checkout/Checkout';
 import ProductDetail from './pages/Product Detail/ProductDetail';
 import Login from './pages/login';
 import Register from './pages/register';
@@ -12,6 +12,7 @@ import RevenueOverview from './pages/admin/Revenue Overview/revenue-overview';
 import ProductManagement from './pages/admin/Product Management/Product-management';
 import SearchResult from './pages/Search Result/Search-result';
 import Cart from './pages/Cart/Cart';
+import PaymentSuccess from './pages/Payment-success/Payment-success';
 
 import Navbar from './components/Navbar/Navbar';
 import IsLogin from './components/isLogin';
@@ -20,21 +21,22 @@ import Footer from './components/Footer/Footer';
 
 const NavbarWrapper = () => {
   const location = useLocation();
-
+  const isPaymentSuccessPage = location.pathname === '/payment-success';
   const isAuthPage = location.pathname.startsWith('/auth');
   return (
     <>
-      {!isAuthPage && <Navbar />}
+      {!isAuthPage && !isPaymentSuccessPage && <Navbar />}
     </>
   );
 };
 
 const FooterWrapper = () => {
   const location = useLocation();
+  const isPaymentSuccessPage = location.pathname === '/payment-success';
   const isAuthPage = location.pathname.startsWith('/auth');
   return (
     <>
-      {!isAuthPage && <Footer />}
+      {!isAuthPage && !isPaymentSuccessPage && <Footer />}
     </>
   );
 };
@@ -75,6 +77,8 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+
+          <Route path="/payment-success" element={<PaymentSuccess />} />
 
           {/* Login required routes */}
           <Route

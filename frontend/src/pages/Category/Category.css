@@ -28,6 +28,9 @@
 }
 
 .product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     cursor: pointer;
     transition: opacity 0.2s ease;
     text-decoration: none;
