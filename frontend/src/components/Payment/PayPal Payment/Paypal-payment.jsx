@@ -12,7 +12,6 @@ const PayPalPayment = ({ totalInUSD, isDeliveryValid, onSuccess }) => {
                     shape: "pill",
                 }}
                 onClick={(data, actions) => {
-                    // Trả về actions.resolve() hoặc actions.reject() để kiểm soát việc mở popup
                     if (isDeliveryValid()) {
                         return actions.resolve();
                     } else {
@@ -23,8 +22,8 @@ const PayPalPayment = ({ totalInUSD, isDeliveryValid, onSuccess }) => {
                     return actions.order.create({
                         purchase_units: [{
                             amount: {
-                                currency_code: "USD", // PHẢI nằm ở đây
-                                value: String(totalInUSD) // Đảm bảo là chuỗi
+                                currency_code: "USD",
+                                value: String(totalInUSD)
                             },
                         }]
                     });
@@ -32,11 +31,10 @@ const PayPalPayment = ({ totalInUSD, isDeliveryValid, onSuccess }) => {
                 onApprove={async (data, actions) => {
                     try {
                         const details = await actions.order.capture();
-                        // Chỉ gọi onSuccess khi đã capture thành công
                         await onSuccess(details);
                     } catch (error) {
                         console.error("Capture failed:", error);
-                        alert("Thanh toán thất bại khi lấy tiền. Vui lòng thử lại.");
+                        alert("Payment capture failed. Please try again.");
                     }
                 }}
                 onError={(err) => {
