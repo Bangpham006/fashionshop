@@ -31,7 +31,7 @@ function Login() {
                     localStorage.setItem("userId", String(userId));
 
                     setError('Login successful! Redirecting...');
-                    setErrorColor('#4ad540');
+                    setErrorColor('green');
                     setTimeout(() => {
                         window.location.href = '/';
                     }, 500);

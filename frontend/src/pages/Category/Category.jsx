@@ -133,7 +133,6 @@ const Category = () => {
                             </div>
                             <div className="product-info">
                                 <h3 className="product-name">{product.name}</h3>
-                                <p className="product-category">{product.gender} {categoryName}</p>
                                 <p className="product-price">
                                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.basePrice)}
                                 </p>

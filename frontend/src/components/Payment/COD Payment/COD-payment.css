@@ -1,0 +1,22 @@
+.payment-method-container {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.payment-note {
+    color: #707072;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.pay-now-button {
+    width: 100%;
+    padding: 18px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 35px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
