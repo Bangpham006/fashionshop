@@ -1,6 +1,6 @@
 import React from 'react';
 import RevenueGraph from '../../../components/graph';
-import './revenue-overview.css';
+import './revenueOverview.css';
 
 const RevenueOverview = () => {
     return (

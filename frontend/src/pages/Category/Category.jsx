@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import LoadingCircles from '../../components/Loading-circles';
+import LoadingCircles from '../../components/LoadingCircles';
 import './Category.css';
 import { ChevronDown } from 'lucide-react';
 

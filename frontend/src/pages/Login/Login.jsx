@@ -108,9 +108,15 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '90vh',
-        backgroundColor: '#f5f5f5'
+        minHeight: '100vh',
+        width: '100vw',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        backgroundColor: '#f5f5f5',
+        overflow: 'hidden',
     },
+
     card: {
         padding: '50px 40px',
         borderRadius: '15px',
@@ -119,7 +125,11 @@ const styles = {
         boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
         backgroundColor: '#fff'
     },
-    inputGroup: { marginBottom: '20px' },
+
+    inputGroup: {
+        marginBottom: '20px'
+    },
+
     input: {
         width: '100%',
         padding: '14px 20px',
@@ -130,6 +140,7 @@ const styles = {
         backgroundColor: '#f9f9f9',
         fontSize: '15px'
     },
+
     button: {
         width: '100%',
         padding: '14px',
@@ -142,6 +153,7 @@ const styles = {
         fontWeight: 'bold',
         transition: '0.3s opacity'
     },
+
     link: {
         color: '#000',
         fontWeight: 'bold',

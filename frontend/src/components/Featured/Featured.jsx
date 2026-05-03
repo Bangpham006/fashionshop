@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import LoadingCircles from '../Loading-circles';
+import LoadingCircles from '../LoadingCircles';
 import './Featured.css';
 
 const Featured = () => {

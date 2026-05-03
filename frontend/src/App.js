@@ -1,18 +1,18 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
-import Home from './pages/home';
+import Home from './pages/Home/Home';
 import Category from './pages/Category/Category';
 import Checkout from './pages/Checkout/Checkout';
 import ProductDetail from './pages/Product Detail/ProductDetail';
-import Login from './pages/login';
-import Register from './pages/register';
-import ForgotPassword from './pages/forgot-password';
-import RevenueOverview from './pages/admin/Revenue Overview/revenue-overview';
-import ProductManagement from './pages/admin/Product Management/Product-management';
-import SearchResult from './pages/Search Result/Search-result';
+import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
+import ForgotPassword from './pages/Forgot Password/ForgotPassword';
+import RevenueOverview from './pages/Admin Pages/Revenue Overview/revenueOverview';
+import ProductManagement from './pages/Admin Pages/Product Management/ProductManagement';
+import SearchResult from './pages/Search Result/SearchResult';
 import Cart from './pages/Cart/Cart';
-import PaymentSuccess from './pages/Payment-success/Payment-success';
+import PaymentSuccess from './pages/Payment Success/PaymentSuccess';
 
 import Navbar from './components/Navbar/Navbar';
 import IsLogin from './components/isLogin';

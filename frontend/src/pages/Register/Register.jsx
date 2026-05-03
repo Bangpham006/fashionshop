@@ -2,50 +2,46 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
-function ForgotPassword() {
+function Register() {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const [errorColor, setErrorColor] = useState('');
 
-    const handleForgotPassword = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (newPassword !== confirmPassword) {
+        if (password !== confirmPassword) {
             setError('Passwords do not match!');
             setErrorColor('red');
             return;
         }
 
         try {
-            await axios.post('http://localhost:8080/api/auth/forgot-password', {
-                username,
-                email,
-                newPassword
-            });
+            await axios.post('http://localhost:8080/api/auth/register', { username, password, email });
 
-            setError('Password changed successfully! Redirecting to login...');
+            setError('Registration successful! Redirecting to login...');
             setErrorColor('green');
 
             setTimeout(() => {
                 window.location.href = '/auth/login';
             }, 1000);
-        } catch (error) {
-            setError('Failed to change password. Please check your username and email.');
+        } catch (err) {
+            setError('Username already exists!');
             setErrorColor('red');
-            console.error(error);
+            console.error(err);
         }
     };
 
     return (
         <div style={styles.container}>
-            <form onSubmit={handleForgotPassword} style={styles.card}>
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>CHANGE PASSWORD</h2>
+            <form onSubmit={handleRegister} style={styles.card}>
+                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>CREATE ACCOUNT</h2>
 
-                {error && <p style={{ color: errorColor, textAlign: 'center' }}>{error}</p>}
+                {error && <p style={{ color: errorColor }}>{error}</p>}
 
                 <div style={styles.inputGroup}>
                     <input
@@ -72,9 +68,9 @@ function ForgotPassword() {
                 <div style={styles.inputGroup}>
                     <input
                         type="password"
-                        placeholder="New Password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                         style={styles.input}
                     />
@@ -92,11 +88,11 @@ function ForgotPassword() {
                 </div>
 
                 <p style={{ fontSize: '14px' }}>
-                    Don't have an account? <Link to="/auth/register" style={styles.link}>Register</Link>
+                    Already have an account? <Link to="/auth/login" style={styles.link}>Login</Link>
                 </p>
 
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                    <button type="submit" style={styles.button}>Change Password</button>
+                    <button type="submit" style={styles.button}>Register</button>
                 </div>
             </form>
         </div>
@@ -108,14 +104,21 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '90vh',
+        minHeight: '100vh',
+        width: '100vw',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        backgroundColor: '#f5f5f5',
+        overflow: 'hidden',
     },
     card: {
         padding: '40px',
         borderRadius: '12px',
         width: '100%',
         maxWidth: '400px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        backgroundColor: '#fff'
     },
     inputGroup: {
         marginBottom: '15px'
@@ -146,4 +149,4 @@ const styles = {
     }
 };
 
-export default ForgotPassword;
+export default Register;

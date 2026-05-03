@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import LoadingCircles from '../../components/Loading-circles';
+import LoadingCircles from '../../components/LoadingCircles';
 import './Cart.css';
 
 const Cart = () => {

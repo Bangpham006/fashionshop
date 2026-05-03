@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Trash2, Edit, Plus, X, Save, Upload } from 'lucide-react';
-import LoadingCircles from '../../../components/Loading-circles';
-import './Product-management.css';
+import LoadingCircles from '../../../components/LoadingCircles';
+import './ProductManagement.css';
 
 const ProductManagement = () => {
     const [products, setProducts] = useState([]);

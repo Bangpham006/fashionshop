@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import LoadingCircles from '../../components/Loading-circles';
+import LoadingCircles from '../../components/LoadingCircles';
 import axios from 'axios';
 import './ProductDetail.css';
 

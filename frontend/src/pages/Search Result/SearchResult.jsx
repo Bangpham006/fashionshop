@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import LoadingCircles from '../../components/Loading-circles';
-import './Search-result.css';
+import LoadingCircles from '../../components/LoadingCircles';
+import './SearchResult.css';
 
 const SearchResult = () => {
     const [searchParams] = useSearchParams();

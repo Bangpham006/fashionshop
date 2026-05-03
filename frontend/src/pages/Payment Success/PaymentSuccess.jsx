@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './Payment-success.css';
+import './PaymentSuccess.css';
 
 const PaymentSuccess = () => {
     const navigate = useNavigate();

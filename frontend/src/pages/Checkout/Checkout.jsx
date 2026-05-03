@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-import LoadingCircles from '../../components/Loading-circles';
-import CODPayment from '../../components/Payment/COD Payment/COD-payment';
+import LoadingCircles from '../../components/LoadingCircles';
 import CardPayment from '../../components/Payment/Card Payment/Card-payment';
 import PayPalPayment from '../../components/Payment/PayPal Payment/Paypal-payment';
 import './Checkout.css';
@@ -89,7 +88,7 @@ const Checkout = () => {
         return (
             <div className="error-container">
                 <h2>Your cart is empty.</h2>
-                <button className="btn-pay-now" style={{ width: 'auto', padding: '12px 30px' }} onClick={() => navigate('/')}>Return to Shop</button>
+                <button className="button-pay-now" style={{ width: 'auto', padding: '12px 30px' }} onClick={() => navigate('/')}>Return to Shop</button>
             </div>
         );
     }
@@ -181,7 +180,7 @@ const Checkout = () => {
                                 onSuccess={handleOrderSuccess}
                             />
                         ) : paymentMethod === 'COD' ? (
-                            <button className="btn-pay-now" onClick={handlePayNow}>Place Order</button>
+                            <button className="button-pay-now" onClick={handlePayNow}>Place Order</button>
                         ) : null}
 
                         {paymentMethod === 'CARD' && (
