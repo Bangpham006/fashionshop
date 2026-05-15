@@ -40,7 +40,7 @@ A full-stack e-commerce fashion website that allows users to browse products, ma
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/fashion-shop.git
+https://github.com/your-username/fashion-shop.git](https://github.com/Bangpham006/fashionshop.git
 ```
 
 ---
@@ -58,21 +58,9 @@ npm run dev
 ## Backend Setup
 
 ```bash
-cd backend
 npm install
 npm start
 ```
-
-## Environment Variables
-
-Create a `.env` file inside the backend folder and add:
-
-```env
-PORT=5000
-MONGO_URI=your_database_url
-JWT_SECRET=your_secret_key
-```
-
 
 ## Team Project
 
