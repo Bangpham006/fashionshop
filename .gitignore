@@ -4,6 +4,40 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Logs & crash dumps
+*.log
+hs_err_pid*.log
+replay_pid*.log
+et --hard *
+
+# Environment & secrets
+.env
+*.env.local
+*-secret.properties
+*.secret.properties
+src/main/resources/application-secret.properties
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/build/
+.npm
+.eslintcache
+
+# Python / AI Service
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+ai-service/__pycache__/
+ai-service/.env
+ai-service/venv/
+.venv/
+env/
+venv/
+ENV/
+
 ### STS ###
 .apt_generated
 .classpath

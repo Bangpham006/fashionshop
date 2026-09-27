@@ -18,6 +18,7 @@ import Navbar from './components/Navbar/Navbar';
 import IsLogin from './components/isLogin';
 import IsAdmin from './components/isAdmin';
 import Footer from './components/Footer/Footer';
+import Chatbot from './components/Chatbot/Chatbot';
 
 const NavbarWrapper = () => {
   const location = useLocation();
@@ -126,6 +127,7 @@ function App() {
       </div>
 
       <FooterWrapper />
+      <Chatbot />
     </Router>
   );
 }
