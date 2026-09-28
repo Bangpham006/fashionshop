@@ -36,8 +36,8 @@ const ProductManagement = () => {
         try {
             setSaving(true);
             const [prodRes, catRes] = await Promise.all([
-                axios.get('http://localhost:8080/api/products/filter?size=100'),
-                axios.get('http://localhost:8080/api/categories')
+                axios.get('https://fashionshop-e972.onrender.com/api/products/filter?size=100'),
+                axios.get('https://fashionshop-e972.onrender.com/api/categories')
             ]);
             setProducts(prodRes.data.content);
             setCategories(catRes.data);
@@ -75,7 +75,7 @@ const ProductManagement = () => {
             setEditingProduct(product);
             setFormData({ ...product, isFeatured: product.isFeatured || false });
             try {
-                const varRes = await axios.get(`http://localhost:8080/api/variants/product/${product.productId}`);
+                const varRes = await axios.get(`https://fashionshop-e972.onrender.com/api/variants/product/${product.productId}`);
                 setVariants(varRes.data);
             } catch (error) { setVariants([]); }
         } else {
@@ -101,7 +101,7 @@ const ProductManagement = () => {
     const removeProduct = async (product) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             try {
-                await axios.delete(`http://localhost:8080/api/products/${product.productId}`, {
+                await axios.delete(`https://fashionshop-e972.onrender.com/api/products/${product.productId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 alert("Product deleted successfully!");
@@ -136,7 +136,7 @@ const ProductManagement = () => {
 
         if (v.id && window.confirm("Are you sure you want to delete this variant?")) {
             try {
-                await axios.delete(`http://localhost:8080/api/variants/${v.id}`, config);
+                await axios.delete(`https://fashionshop-e972.onrender.com/api/variants/${v.id}`, config);
                 setVariants(variants.filter((_, i) => i !== index));
             } catch (error) {
                 alert("Could not delete variant. Error 403.");
@@ -157,10 +157,10 @@ const ProductManagement = () => {
         try {
             let currentProductId;
             if (editingProduct) {
-                await axios.put(`http://localhost:8080/api/products/${editingProduct.productId}`, formData, config);
+                await axios.put(`https://fashionshop-e972.onrender.com/api/products/${editingProduct.productId}`, formData, config);
                 currentProductId = editingProduct.productId;
             } else {
-                const res = await axios.post('http://localhost:8080/api/products', formData, config);
+                const res = await axios.post('https://fashionshop-e972.onrender.com/api/products', formData, config);
                 currentProductId = res.data.productId;
             }
 
@@ -174,10 +174,10 @@ const ProductManagement = () => {
                 };
 
                 if (v.id && v.id !== "") {
-                    return axios.put(`http://localhost:8080/api/variants/${v.id}`, payload, config);
+                    return axios.put(`https://fashionshop-e972.onrender.com/api/variants/${v.id}`, payload, config);
                 } else {
                     const { id, ...newVariantPayload } = payload;
-                    return axios.post(`http://localhost:8080/api/variants`, newVariantPayload, config);
+                    return axios.post(`https://fashionshop-e972.onrender.com/api/variants`, newVariantPayload, config);
                 }
             });
 

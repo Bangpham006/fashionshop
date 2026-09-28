@@ -31,7 +31,7 @@ const Checkout = () => {
                 return;
             }
             try {
-                const response = await axios.get(`http://localhost:8080/api/cart/user/${userId}`);
+                const response = await axios.get(`https://fashionshop-e972.onrender.com/api/cart/user/${userId}`);
                 setCart(response.data);
             } catch (error) {
                 console.error("Error fetching cart:", error);
@@ -69,7 +69,7 @@ const Checkout = () => {
 
     const handleOrderSuccess = async (details = null) => {
         try {
-            await axios.delete(`http://localhost:8080/api/cart/clear/${userId}`);
+            await axios.delete(`https://fashionshop-e972.onrender.com/api/cart/clear/${userId}`);
             navigate('/payment-success', {
                 state: {
                     fromCheckout: true,

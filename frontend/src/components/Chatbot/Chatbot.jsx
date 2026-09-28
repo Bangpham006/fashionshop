@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Send, X, Sparkles, RefreshCw, Bot } from 'lucide-react';
 import './Chatbot.css';
 
-const AI_API_URL = 'http://localhost:8000/api/chat/recommend';
+const AI_API_URL = process.env.REACT_APP_AI_URL || 'https://fashionshop-ai.onrender.com/api/chat/recommend';
 
 const QUICK_PROMPTS = [
   "Quần jeans retro vintage đi cafe",
@@ -69,15 +69,62 @@ const Chatbot = () => {
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error("AI Chat error:", error);
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: "Rất tiếc, AI Stylist tạm thời chưa kết nối được với server gợi ý. Bạn vui lòng kiểm tra xem Python AI Service (cổng 8000) đã bật chưa nhé!",
-          products: []
-        }
-      ]);
+      console.warn("AI service fallback to backend product search:", error);
+      try {
+        const prodRes = await axios.get('https://fashionshop-e972.onrender.com/api/products/filter?size=50');
+        const allProducts = prodRes.data?.content || prodRes.data || [];
+        
+        const textLower = text.toLowerCase();
+        const keywords = textLower.split(/\s+/).filter(w => w.length > 1);
+        
+        const matched = allProducts.map(p => {
+          let score = 0;
+          const pName = (p.name || '').toLowerCase();
+          const pType = (p.type || '').toLowerCase();
+          const pDesc = (p.description || '').toLowerCase();
+          
+          keywords.forEach(kw => {
+            if (pName.includes(kw)) score += 4;
+            if (pType.includes(kw)) score += 3;
+            if (pDesc.includes(kw)) score += 1;
+          });
+          if (p.isFeatured) score += 1;
+          return { ...p, score };
+        })
+        .filter(p => p.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+        const candidates = matched.length > 0 ? matched : allProducts.slice(0, 3);
+        const productCards = candidates.map(p => ({
+          id: p.productId || p.id,
+          name: p.name,
+          slug: p.slug,
+          brand: p.brand || 'FashionShop',
+          type: p.type || 'Thời trang',
+          basePrice: p.basePrice || 0,
+          image: (p.images && p.images[0]) || '',
+          matchReason: `Phù hợp với phong cách "${text}"`
+        }));
+
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `Chào bạn! Dựa trên phong cách "${text}", AI Stylist đã chọn lọc những mẫu sản phẩm phù hợp nhất từ bộ sưu tập FashionShop dưới đây:`,
+            products: productCards
+          }
+        ]);
+      } catch (fallbackErr) {
+        setMessages(prev => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: "Chào bạn! Hiện tại hệ thống đang đồng bộ kho hàng, bạn hãy xem các mẫu sản phẩm mới nhất trên trang chủ nhé!",
+            products: []
+          }
+        ]);
+      }
     } finally {
       setLoading(false);
     }

@@ -21,7 +21,7 @@ const SearchResult = () => {
             if (!query) return;
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8080/api/products/search`, {
+                const response = await axios.get(`https://fashionshop-e972.onrender.com/api/products/search`, {
                     params: {
                         keyword: query,
                         page: currentPage,

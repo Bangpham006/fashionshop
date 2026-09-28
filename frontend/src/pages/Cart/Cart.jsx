@@ -18,7 +18,7 @@ const Cart = () => {
                 return;
             }
             try {
-                const response = await axios.get(`http://localhost:8080/api/cart/user/${userId}`);
+                const response = await axios.get(`https://fashionshop-e972.onrender.com/api/cart/user/${userId}`);
                 setCart(response.data);
             } catch (error) {
                 console.error("Error:", error);
@@ -59,7 +59,7 @@ const Cart = () => {
         }
         if (window.confirm("Are you sure you want to remove this item from your cart?")) {
             try {
-                const response = await axios.delete(`http://localhost:8080/api/cart/remove`, {
+                const response = await axios.delete(`https://fashionshop-e972.onrender.com/api/cart/remove`, {
                     params: {
                         userId: userId,
                         variantId: variantId

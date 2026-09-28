@@ -17,7 +17,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/categories');
+        const response = await axios.get('https://fashionshop-e972.onrender.com/api/categories');
         setCategories(response.data);
       } catch (error) {
         console.error("Error:", error);

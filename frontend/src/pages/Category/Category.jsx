@@ -49,11 +49,11 @@ const Category = () => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const catRes = await axios.get(`http://localhost:8080/api/categories/slug/${slug}`);
+                const catRes = await axios.get(`https://fashionshop-e972.onrender.com/api/categories/slug/${slug}`);
                 const categoryId = catRes.data.id || catRes.data._id;
                 setCategoryName(catRes.data.name);
 
-                const prodRes = await axios.get('http://localhost:8080/api/products/filter', {
+                const prodRes = await axios.get('https://fashionshop-e972.onrender.com/api/products/filter', {
                     params: {
                         categoryId: categoryId,
                         gender: gender,

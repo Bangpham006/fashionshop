@@ -21,7 +21,7 @@ function Register() {
         }
 
         try {
-            await axios.post('http://localhost:8080/api/auth/register', { username, password, email });
+            await axios.post('https://fashionshop-e972.onrender.com/api/auth/register', { username, password, email });
 
             setError('Registration successful! Redirecting to login...');
             setErrorColor('green');

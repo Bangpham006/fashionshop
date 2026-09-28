@@ -12,7 +12,7 @@ const Featured = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/products/featured');
+        const response = await axios.get('https://fashionshop-e972.onrender.com/api/products/featured');
         setFeaturedProducts(response.data);
       } catch (error) {
         console.error("Error:", error);

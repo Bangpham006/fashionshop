@@ -21,14 +21,14 @@ const ProductDetail = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const productRes = await axios.get(`http://localhost:8080/api/products/slug/${slug}`);
+                const productRes = await axios.get(`https://fashionshop-e972.onrender.com/api/products/slug/${slug}`);
                 const productData = productRes.data;
                 setProduct(productData);
 
                 const pId = productData.productId || productData.id || productData._id;
 
                 if (pId) {
-                    const variantsRes = await axios.get(`http://localhost:8080/api/variants/product/${pId}`);
+                    const variantsRes = await axios.get(`https://fashionshop-e972.onrender.com/api/variants/product/${pId}`);
                     const data = Array.isArray(variantsRes.data) ? variantsRes.data : [];
                     const sortedVariants = data.sort((a, b) => parseFloat(a.size) - parseFloat(b.size));
                     setVariants(sortedVariants);
@@ -55,7 +55,7 @@ const ProductDetail = () => {
         }
 
         try {
-            await axios.post(`http://localhost:8080/api/cart/add`, null, {
+            await axios.post(`https://fashionshop-e972.onrender.com/api/cart/add`, null, {
                 params: {
                     userId: userId,
                     variantId: selectedVariant.id || selectedVariant._id,

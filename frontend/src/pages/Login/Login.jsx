@@ -13,7 +13,7 @@ function Login() {
         setError('');
 
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/login", {
+            const response = await axios.post("https://fashionshop-e972.onrender.com/api/auth/login", {
                 username: username,
                 password: password
             });
