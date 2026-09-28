@@ -2,6 +2,8 @@ import json
 import logging
 import re
 from typing import List, Dict, Any, Optional
+import numpy as np
+import pandas as pd
 from google import genai
 from config import GEMINI_API_KEY, GEMINI_MODEL
 from database import db_client
@@ -19,58 +21,57 @@ class FashionRecommender:
                 logger.warning(f"Failed to initialize Gemini Client: {e}")
 
     def _fallback_recommend(self, user_message: str, products: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Thuật toán tìm kiếm tương đồng ngữ nghĩa & từ khóa dự phòng (Rule-based / Semantic fallback)"""
+        """Thuật toán xếp hạng và lọc sản phẩm dự phòng sử dụng Pandas & NumPy (Vectorized Keyword & Feature Matching)"""
+        if not products:
+            return {"reply": "Hiện tại không có sản phẩm nào phù hợp.", "products": []}
+
+        # Chuyển đổi dữ liệu sang Pandas DataFrame để xử lý dữ liệu dạng bảng
+        df = pd.DataFrame(products)
         user_lower = user_message.lower()
 
-        # Phát hiện giới tính
+        # Phát hiện giới tính từ tin nhắn
         detected_gender = None
         if any(w in user_lower for w in ["nam", "men", "trai", "boy", "anh"]):
             detected_gender = "Men"
         elif any(w in user_lower for w in ["nữ", "women", "gái", "girl", "chị", "em"]):
             detected_gender = "Women"
 
-        # Tính điểm phù hợp cho từng sản phẩm
-        scored_products = []
-        keywords = re.findall(r'\w+', user_lower)
+        # Chuẩn hóa các trường văn bản bằng Pandas
+        names = df["name"].fillna("").astype(str).str.lower()
+        descriptions = df["description"].fillna("").astype(str).str.lower()
+        types = df["type"].fillna("").astype(str).str.lower()
+        genders = df["gender"].fillna("").astype(str)
 
-        for p in products:
-            score = 0
-            p_name = p.get("name", "").lower()
-            p_desc = p.get("description", "").lower()
-            p_tags = [t.lower() for t in p.get("tags", [])]
-            p_type = p.get("type", "").lower()
-            p_gender = p.get("gender", "")
+        # Khởi tạo vector điểm số bằng NumPy
+        n = len(df)
+        scores = np.zeros(n, dtype=np.float32)
 
-            # Ưu tiên giới tính
-            if detected_gender:
-                if p_gender == detected_gender or p_gender == "Unisex":
-                    score += 5
-                else:
-                    score -= 3
+        # 1. Trọng số giới tính (Vectorized scoring with NumPy)
+        if detected_gender:
+            gender_match = (genders == detected_gender) | (genders == "Unisex")
+            scores += np.where(gender_match, 5.0, -3.0)
 
-            # So khớp từ khóa
-            for kw in keywords:
-                if len(kw) < 2:
-                    continue
-                if kw in p_name:
-                    score += 4
-                if kw in p_type:
-                    score += 3
-                if any(kw in tag for tag in p_tags):
-                    score += 3
-                if kw in p_desc:
-                    score += 1
+        # 2. Trọng số từ khóa tìm kiếm
+        keywords = [kw for kw in re.findall(r'\w+', user_lower) if len(kw) >= 2]
+        for kw in keywords:
+            scores += np.where(names.str.contains(kw, regex=False), 4.0, 0.0)
+            scores += np.where(types.str.contains(kw, regex=False), 3.0, 0.0)
+            scores += np.where(descriptions.str.contains(kw, regex=False), 1.0, 0.0)
 
-            if p.get("isFeatured", False):
-                score += 1
+        # 3. Sản phẩm nổi bật (Featured boost)
+        if "isFeatured" in df.columns:
+            featured = df["isFeatured"].fillna(False).astype(bool).to_numpy()
+            scores += np.where(featured, 1.0, 0.0)
 
-            scored_products.append((score, p))
+        # Xếp hạng sản phẩm bằng NumPy argsort (descending order)
+        ranked_indices = np.argsort(-scores)
+        positive_mask = scores[ranked_indices] > 0
+        valid_indices = ranked_indices[positive_mask][:3]
 
-        # Sắp xếp lấy top sản phẩm có điểm cao nhất
-        scored_products.sort(key=lambda x: x[0], reverse=True)
-        top_candidates = [p for score, p in scored_products[:3] if score > 0]
-        if not top_candidates:
-            top_candidates = products[:3]
+        if len(valid_indices) == 0:
+            valid_indices = ranked_indices[:3]
+
+        top_candidates = df.iloc[valid_indices].to_dict(orient="records")
 
         matched_items = []
         for p in top_candidates:
