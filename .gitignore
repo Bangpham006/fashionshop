@@ -43,3 +43,5 @@ application-secret.properties
 *.log
 replay_pid*.log
 et --hard*
+__pycache__/
+*.pyc
