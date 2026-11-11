@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.iws.fashionshop.model.Product;
 import com.iws.fashionshop.service.ProductService;
 
-@RestController
+@RestController// giup du lieu tra ve tu cac ham bien thanh json
+// dinh nghia duong dan goc cho api
 @RequestMapping("/api/products")
-public class ProductController {
 
+public class ProductController {
+// tim va nap oj seevice de xu ly
     @Autowired
     private ProductService productService;
 
@@ -31,9 +33,10 @@ public class ProductController {
             @RequestParam(required = false) String categoryId,
             @RequestParam(required = false) String gender,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
+        // lay du lieu va gui ve truỳen ve cho service su ly sau do chuyen lai cho fontend
         return ResponseEntity.ok(productService.getFilteredProducts(categoryId, gender, page, size, sortBy, sortDir));
     }
 
@@ -53,11 +56,13 @@ public class ProductController {
     }
 
     @GetMapping("/slug/{slug}")
+    // lay gia tri truc tiep tu duong dan
     public ResponseEntity<Product> getBySlug(@PathVariable String slug) {
         return ResponseEntity.ok(productService.getProductBySlug(slug));
     }
 
     @PostMapping("")
+    // dung cho admin rbody nhan ca 1 json admin nhap
     public ResponseEntity<Product> create(@RequestBody Product product) {
         Product savedProduct = productService.createProduct(product);
         return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);

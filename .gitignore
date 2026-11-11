@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets & Environment Variables ###
+.env
+.env.*
+!.env.example
+application-secret.properties
+**/application-secret.properties
+
+### Logs & Temporary Files ###
+*.log
+replay_pid*.log
+et --hard*
